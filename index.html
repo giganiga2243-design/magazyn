@@ -357,7 +357,7 @@ let cfg = { ...DEF_SETTINGS };
 let selF = null, selB = null, qty = 1, txType = 'sale';
 let isSaving = false;
 
-// --- DYNAMICZNE, ANIMOWANE TŁO (GWIAZDY + MGŁAWICA + NEBULA) ---
+// --- DYNAMICZNE, ANIMOWANE TŁO ---
 const canvas = document.getElementById('bg-canvas');
 const ctx = canvas.getContext('2d');
 let stars = [];
@@ -438,11 +438,7 @@ const musicStatus = document.getElementById('music-status');
 let currentTrackName = "Lofi cyka blyat";
 
 function toggleMusic() {
-  if (music.paused) {
-    playMusic();
-  } else {
-    pauseMusic();
-  }
+  if (music.paused) { playMusic(); } else { pauseMusic(); }
 }
 
 function playMusic() {
@@ -474,11 +470,7 @@ function checkLogin() {
   const pass = document.getElementById('login-password').value;
   let user = "";
 
-  if(pass === 'szymek123') {
-    user = "szymon";
-  } else if(pass === 'kubuu22') {
-    user = "kuba";
-  }
+  if(pass === 'szymek123') { user = "szymon"; } else if(pass === 'kubuu22') { user = "kuba"; }
 
   if(user !== "") {
     localStorage.setItem('wiflux_logged', 'true');
@@ -499,14 +491,12 @@ function triggerWelcome(user) {
   
   const welcome = document.getElementById('welcome-screen');
   welcome.classList.add('show');
-  
-  // Automatyczne odpalenie muzyki przy wejściu (jeśli przeglądarka pozwoli)
   playMusic();
 }
 
 function closeWelcomeScreen() {
   document.getElementById('welcome-screen').classList.remove('show');
-  playMusic(); // Ponowna próba w razie blokady
+  playMusic();
 }
 
 async function init() {
@@ -517,22 +507,25 @@ async function init() {
   }
   toast('Wczytywanie bazy Matrix...');
   await syncData();
+  
   document.getElementById('s-cost').value = cfg.cost;
   document.getElementById('s-price').value = cfg.price;
   document.getElementById('s-batch').value = cfg.batch;
   document.getElementById('s-alert').value = cfg.alert;
+  
   renderAll();
+  // Cykliczne odświeżanie w chmurze
   setInterval(syncData, 4000);
 }
 
 async function syncData() {
-  if (isSaving) return;
+  if (isSaving) return; // Zapobiega nadpisaniu danych podczas klikania zmian
   try {
     const res = await fetch(DB_URL);
     if(!res.ok) return;
     const d = await res.json();
     if (d && d.state) {
-      state = { buyers: [...DEF_BUYERS], orders: [], ...d.state };
+      state = { buyers: [...DEF_BUYERS], orders: [], sales: [], flavors: DEF_FLAVORS(), ...d.state };
       if (d.settings) cfg = { ...DEF_SETTINGS, ...d.settings };
       renderAll();
     }
@@ -547,8 +540,11 @@ async function persist() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ state, settings: cfg })
     });
-  } catch(e) { toast('❌ Błąd zapisu chmury!'); }
-  finally { isSaving = false; }
+  } catch(e) { 
+    toast('❌ Błąd zapisu chmury!'); 
+  } finally { 
+    isSaving = false; 
+  }
 }
 
 const fmt = n => n.toLocaleString('pl-PL') + ' zł';
@@ -565,6 +561,10 @@ function setTxType(type) {
 }
 
 function renderAll() {
+  if(!state.orders) state.orders = [];
+  if(!state.sales) state.sales = [];
+  if(!state.buyers) state.buyers = [...DEF_BUYERS];
+
   const pendingOrders = state.orders.filter(o => o.status === 'pending');
   document.getElementById('nav-order-count').textContent = pendingOrders.length;
 
@@ -653,17 +653,16 @@ async function completeOrder(id) {
   o.status = 'completed';
   o.completedTs = Date.now();
   
-  toast('Realizacja...');
-  await persist();
   renderAll();
+  await persist();
   toast('✓ Zamówienie zrealizowane i wydane!');
 }
 
 async function deleteOrder(id) {
   if(!confirm('Anulować to zamówienie?')) return;
   state.orders = state.orders.filter(o => o.id !== id);
-  await persist();
   renderAll();
+  await persist();
 }
 
 function renderFlavorGrid() {
@@ -738,10 +737,12 @@ async function handleSubmit() {
     toast('Zapisywanie rezerwacji...');
   }
 
+  const nextPage = txType === 'sale' ? 'pulpit' : 'zamowienia';
   selF = null; qty = 1;
-  await persist(); 
+  
   renderAll();
-  showPage(txType === 'sale' ? 'pulpit' : 'zamowienia');
+  await persist(); 
+  showPage(nextPage);
 }
 
 function renderHistory() {
@@ -764,7 +765,8 @@ async function deleteSale(idx) {
   const f = state.flavors.find(x=>x.id===s.flavorId);
   if(f) f.stock += s.qty;
   state.sales.splice(idx, 1);
-  await persist(); renderAll();
+  renderAll();
+  await persist(); 
 }
 
 function renderMagazyn() {
@@ -781,16 +783,33 @@ function renderMagazyn() {
   }).join('');
 }
 
-async function renameFlavor(i,v) { if(v.trim()) { state.flavors[i].name=v.trim(); await persist(); renderAll(); } }
-async function restockFlavor(i) { state.flavors[i].stock += cfg.batch; await persist(); renderAll(); toast('Dodano dostawę!'); }
-async function adjustStock(i,d) { state.flavors[i].stock = Math.max(0, state.flavors[i].stock + d); await persist(); renderAll(); }
+async function renameFlavor(i,v) { 
+  if(v.trim()) { 
+    state.flavors[i].name=v.trim(); 
+    renderAll();
+    await persist(); 
+  } 
+}
+async function restockFlavor(i) { 
+  state.flavors[i].stock += cfg.batch; 
+  renderAll();
+  await persist(); 
+  toast('Dodano dostawę!'); 
+}
+async function adjustStock(i,d) { 
+  state.flavors[i].stock = Math.max(0, state.flavors[i].stock + d); 
+  renderAll();
+  await persist(); 
+}
 
-function saveSettings() {
+async function saveSettings() {
   cfg.cost = parseFloat(document.getElementById('s-cost').value)||26;
   cfg.price = parseFloat(document.getElementById('s-price').value)||60;
   cfg.batch = parseInt(document.getElementById('s-batch').value)||100;
   cfg.alert = parseInt(document.getElementById('s-alert').value)||10;
-  persist(); renderAll(); toast('Ustawienia zapisane');
+  renderAll();
+  await persist(); 
+  toast('Ustawienia zapisane');
 }
 
 async function addFlavor() {
@@ -798,7 +817,9 @@ async function addFlavor() {
   if(!n) return;
   state.flavors.push({id:'f'+Date.now(),name:n,stock:0});
   document.getElementById('new-flavor-input').value='';
-  await persist(); renderAll(); toast('Smak dodany');
+  renderAll();
+  await persist(); 
+  toast('Smak dodany');
 }
 
 function exportCsv() {
@@ -818,7 +839,8 @@ function exportCsv() {
 async function resetAll() {
   if(!confirm('Zresetować dane?')) return;
   state={flavors:DEF_FLAVORS(),sales:[],buyers:[...DEF_BUYERS],orders:[]};
-  await persist(); renderAll();
+  renderAll();
+  await persist(); 
 }
 
 function showPage(id) {
