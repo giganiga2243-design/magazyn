@@ -2,260 +2,1291 @@
 <html lang="pl">
 <head>
 <meta charset="UTF-8" />
-<title>Wiflux Sprzedaż Live & Zamówienia</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Wiflux · Live Sales OS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
-  --bg: #0B0B0E;
-  --surface: #121216;
-  --surface2: #1A1A22;
-  --surface3: #242430;
+  --bg: #060608;
+  --bg2: #08080C;
+  --surface: rgba(15, 15, 20, 0.85);
+  --surface-solid: #0F0F14;
+  --surface2: rgba(22, 22, 30, 0.9);
+  --surface3: rgba(30, 30, 42, 0.95);
+  --surface4: rgba(38, 38, 54, 1);
+  --glass: rgba(255, 255, 255, 0.03);
+  --glass2: rgba(255, 255, 255, 0.055);
   --border: rgba(255,255,255,0.06);
-  --border2: rgba(255,255,255,0.12);
-  --text: #E4E4E7;
-  --text2: #A1A1AA;
-  --text3: #71717A;
-  --accent: #6366F1;
-  --accent-hover: #4F46E5;
-  --green: #10B981;
-  --green-bg: rgba(16, 185, 129, 0.1);
-  --green-text: #34D399;
-  --amber: #F59E0B;
-  --amber-bg: rgba(245, 158, 11, 0.1);
-  --amber-text: #FBBF24;
-  --red: #EF4444;
-  --red-bg: rgba(239, 68, 68, 0.1);
-  --red-text: #F87171;
-  --r: 12px;
-  --r-sm: 8px;
-  --r-xs: 6px;
+  --border2: rgba(255,255,255,0.1);
+  --border3: rgba(255,255,255,0.16);
+  --text: #F0F0F5;
+  --text2: #8888A0;
+  --text3: #55556A;
+  --accent: #5B5BD6;
+  --accent2: #7C7CF8;
+  --accent-glow: rgba(91, 91, 214, 0.25);
+  --accent-hover: #4A4AC0;
+  --green: #00D68F;
+  --green-dim: #00B877;
+  --green-bg: rgba(0, 214, 143, 0.08);
+  --green-border: rgba(0, 214, 143, 0.2);
+  --green-text: #00D68F;
+  --amber: #F0A500;
+  --amber-bg: rgba(240, 165, 0, 0.08);
+  --amber-border: rgba(240, 165, 0, 0.2);
+  --amber-text: #F0A500;
+  --red: #F03E3E;
+  --red-bg: rgba(240, 62, 62, 0.08);
+  --red-border: rgba(240, 62, 62, 0.2);
+  --red-text: #FF6B6B;
+  --r: 14px;
+  --r-sm: 10px;
+  --r-xs: 8px;
+  --r-lg: 18px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.5), 0 8px 24px rgba(0,0,0,0.3);
+  --shadow-lg: 0 2px 6px rgba(0,0,0,0.6), 0 16px 48px rgba(0,0,0,0.4);
+  --shadow-glow: 0 0 0 1px var(--accent-glow), 0 8px 32px var(--accent-glow);
 }
-html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(--text); }
-body { font-family: 'Segoe UI', -apple-system, system-ui, sans-serif; font-size: 14px; line-height: 1.5; display: flex; flex-direction: column; position: relative; }
 
-/* TŁO SPADAJĄCYCH GWIAZD & NEBULI */
-#bg-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; opacity: 0.7; }
+html, body {
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', -apple-system, system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
 
-/* EKRAN LOGOWANIA */
-.login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); display: flex; align-items: center; justify-content: center; z-index: 9999; transition: opacity 0.5s ease; }
-.login-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 32px; width: 100%; max-width: 360px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); position: relative; z-index: 2; animation: fadeIn 0.6s ease; }
+body { display: flex; flex-direction: column; position: relative; }
 
-/* EKRAN POWITALNY */
-.welcome-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 11, 14, 0.95); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9998; opacity: 0; pointer-events: none; transition: opacity 0.6s ease; backdrop-filter: blur(8px); }
+/* ── ANIMATED BACKGROUND ── */
+#bg-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ── NOISE OVERLAY ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  background-size: 200px;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.4;
+}
+
+/* ── LOGIN SCREEN ── */
+.login-screen {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  background: radial-gradient(ellipse 80% 70% at 50% 50%, rgba(91,91,214,0.06) 0%, transparent 70%), var(--bg);
+  transition: opacity 0.6s cubic-bezier(0.4,0,0.2,1);
+}
+
+.login-bg-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(ellipse 60% 60% at 50% 50%, black 20%, transparent 80%);
+}
+
+.login-card {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: var(--r-lg);
+  padding: 40px;
+  width: 100%;
+  max-width: 380px;
+  position: relative;
+  z-index: 2;
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  box-shadow: var(--shadow-lg), inset 0 1px 0 rgba(255,255,255,0.06);
+  animation: loginSlideIn 0.7s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+
+@keyframes loginSlideIn {
+  from { opacity: 0; transform: translateY(24px) scale(0.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.login-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 32px;
+}
+
+.login-logo-icon {
+  width: 44px;
+  height: 44px;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 24px var(--accent-glow);
+}
+
+.login-logo-text { font-size: 22px; font-weight: 700; letter-spacing: -0.03em; }
+.login-logo-tag { font-size: 12px; color: var(--text2); font-weight: 400; letter-spacing: 0.02em; }
+
+.login-subtitle {
+  text-align: center;
+  color: var(--text2);
+  font-size: 13px;
+  margin-bottom: 28px;
+  line-height: 1.6;
+}
+
+.field-wrap { position: relative; }
+.field-wrap input {
+  width: 100%;
+  text-align: center;
+  font-size: 16px;
+  letter-spacing: 0.12em;
+  padding: 14px 20px;
+  border-radius: var(--r-sm);
+}
+.field-wrap input::placeholder { letter-spacing: 0; font-size: 14px; }
+
+.login-error {
+  color: var(--red-text);
+  font-size: 12px;
+  text-align: center;
+  margin-top: 10px;
+  display: none;
+  animation: shake 0.4s ease;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-6px); }
+  75% { transform: translateX(6px); }
+}
+
+.login-hint {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 11px;
+  color: var(--text3);
+}
+
+/* ── WELCOME SCREEN ── */
+.welcome-screen {
+  position: fixed;
+  inset: 0;
+  background: rgba(6,6,8,0.92);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 9998;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+}
 .welcome-screen.show { opacity: 1; pointer-events: auto; }
-.welcome-box { text-align: center; animation: scaleUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
-.welcome-title { font-size: 32px; font-weight: 700; margin-bottom: 10px; background: linear-gradient(45deg, #6366F1, #10B981); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-.welcome-subtitle { font-size: 16px; color: var(--text2); margin-bottom: 24px; }
 
-/* ODTWARZACZ MUZYKI */
-.audio-player { display: flex; align-items: center; gap: 8px; background: var(--surface2); border: 1px solid var(--border); padding: 6px 12px; border-radius: 20px; font-size: 12px; color: var(--text2); }
-.audio-player button { background: none; border: none; color: var(--accent); cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; transition: transform 0.1s; }
-.audio-player button:hover { transform: scale(1.1); color: var(--green-text); }
+.welcome-box {
+  text-align: center;
+  animation: welcomePop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+@keyframes welcomePop {
+  from { transform: scale(0.85) translateY(20px); opacity: 0; }
+  to { transform: scale(1) translateY(0); opacity: 1; }
+}
 
-@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-@keyframes scaleUp { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.welcome-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 16px;
+  border-radius: 20px;
+  background: var(--green-bg);
+  border: 1px solid var(--green-border);
+  color: var(--green-text);
+  font-size: 12px;
+  font-weight: 500;
+  margin-bottom: 24px;
+}
 
-.topbar { height: 56px; background: var(--surface); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 24px; flex-shrink: 0; position: relative; z-index: 2; }
-.brand { display: flex; align-items: center; gap: 10px; }
-.brand-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--green); box-shadow: 0 0 8px var(--green); }
-.brand-name { font-size: 15px; font-weight: 600; letter-spacing: -0.01em; }
-.brand-sub { font-size: 12px; color: var(--text3); margin-left: 2px; }
+.welcome-title {
+  font-size: 48px;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1.1;
+  margin-bottom: 14px;
+  background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.6) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
 
-.shell { display: flex; flex: 1; overflow: hidden; position: relative; z-index: 2; }
-.sidebar { width: 196px; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 12px 8px; gap: 2px; flex-shrink: 0; }
-.nav { padding: 9px 12px; border-radius: var(--r-sm); cursor: pointer; font-size: 13px; color: var(--text2); display: flex; align-items: center; gap: 9px; border: none; background: none; width: 100%; text-align: left; transition: all 0.1s; font-family: inherit; }
-.nav:hover { background: var(--surface2); color: var(--text); }
-.nav.active { background: var(--accent); color: #fff; box-shadow: 0 0 12px rgba(99, 102, 241, 0.4); }
-.nav-sep { height: 1px; background: var(--border); margin: 6px 4px; }
+.welcome-title span {
+  background: linear-gradient(135deg, var(--accent2) 0%, var(--green) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
 
-.wrap { display: flex; flex-direction: column; flex: 1; overflow: hidden; background: rgba(11, 11, 14, 0.6); backdrop-filter: blur(4px); }
-.content { flex: 1; overflow-y: auto; padding: 22px 24px; }
-.page { display: none; }
+.welcome-subtitle { font-size: 16px; color: var(--text2); margin-bottom: 40px; }
+
+.welcome-divider {
+  width: 80px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border3), transparent);
+  margin: 0 auto 40px;
+}
+
+/* ── AUDIO PLAYER ── */
+.audio-player {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  padding: 7px 12px;
+  border-radius: 24px;
+  font-size: 11px;
+  color: var(--text2);
+  backdrop-filter: blur(8px);
+  transition: border-color 0.2s;
+}
+.audio-player:hover { border-color: var(--border2); }
+.audio-player button {
+  background: none; border: none; color: var(--accent2); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s; padding: 2px; border-radius: 4px;
+}
+.audio-player button:hover { color: var(--green); transform: scale(1.1); }
+.audio-playing-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 6px var(--green);
+  animation: pulse-dot 1.4s ease infinite;
+  display: none;
+}
+.audio-playing .audio-playing-dot { display: block; }
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.7); }
+}
+
+/* ── TOPBAR ── */
+.topbar {
+  height: 58px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 10;
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: default;
+  user-select: none;
+}
+
+.brand-icon {
+  width: 30px;
+  height: 30px;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 12px var(--accent-glow);
+  flex-shrink: 0;
+}
+
+.brand-name { font-size: 15px; font-weight: 700; letter-spacing: -0.02em; }
+.brand-sep { width: 1px; height: 14px; background: var(--border3); margin: 0 2px; }
+.brand-sub { font-size: 12px; color: var(--text3); font-weight: 400; }
+
+.topbar-actions { display: flex; align-items: center; gap: 10px; }
+
+/* ── SHELL ── */
+.shell { display: flex; flex: 1; overflow: hidden; position: relative; z-index: 5; }
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width: 210px;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  padding: 14px 10px 20px;
+  gap: 2px;
+  flex-shrink: 0;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.sidebar-section-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text3);
+  padding: 6px 12px 4px;
+  margin-top: 4px;
+}
+
+.nav {
+  padding: 9px 12px;
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text2);
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: 'Inter', sans-serif;
+  letter-spacing: -0.01em;
+  position: relative;
+}
+.nav:hover { background: var(--glass2); color: var(--text); }
+.nav.active {
+  background: linear-gradient(135deg, rgba(91,91,214,0.2) 0%, rgba(91,91,214,0.08) 100%);
+  color: var(--accent2);
+  border: 1px solid rgba(91,91,214,0.2);
+}
+.nav.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 16px;
+  border-radius: 0 3px 3px 0;
+  background: var(--accent2);
+  box-shadow: 0 0 8px var(--accent-glow);
+}
+
+.nav-icon { width: 16px; height: 16px; flex-shrink: 0; opacity: 0.7; }
+.nav.active .nav-icon { opacity: 1; }
+
+.nav-badge {
+  margin-left: auto;
+  background: var(--amber-bg);
+  border: 1px solid var(--amber-border);
+  color: var(--amber-text);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 7px;
+  border-radius: 10px;
+  min-width: 20px;
+  text-align: center;
+  display: none;
+}
+.nav-badge.show { display: block; }
+
+.nav-sep { height: 1px; background: var(--border); margin: 8px 4px; }
+
+/* ── WRAP & CONTENT ── */
+.wrap {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--surface4) transparent;
+}
+.content::-webkit-scrollbar { width: 5px; }
+.content::-webkit-scrollbar-track { background: transparent; }
+.content::-webkit-scrollbar-thumb { background: var(--surface4); border-radius: 4px; }
+
+.page { display: none; animation: pageIn 0.25s ease both; }
 .page.active { display: block; }
+@keyframes pageIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 
-.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 18px 20px; margin-bottom: 14px; box-shadow: 0 4px 6px rgba(0,0,0,0.15); }
-.card-hd { font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text3); margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; }
+/* ── PAGE HEADER ── */
+.page-header { margin-bottom: 24px; }
+.page-title { font-size: 22px; font-weight: 700; letter-spacing: -0.03em; color: var(--text); }
+.page-desc { font-size: 13px; color: var(--text2); margin-top: 3px; }
 
-.metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 18px; }
-.metric { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 16px 18px; box-shadow: 0 4px 6px rgba(0,0,0,0.15); }
-.metric-lbl { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 5px; }
-.metric-val { font-size: 26px; font-weight: 700; letter-spacing: -0.02em; }
+/* ── CARD ── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 20px 22px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  transition: border-color 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent);
+  pointer-events: none;
+}
+
+.card-hd {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.card-hd-icon { color: var(--accent2); display: flex; align-items: center; }
+
+/* ── METRICS GRID ── */
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.metric {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 18px 20px;
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.2s cubic-bezier(0.4,0,0.2,1);
+  cursor: default;
+}
+.metric:hover {
+  border-color: var(--border2);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.metric-glow {
+  position: absolute;
+  top: 0; right: 0;
+  width: 80px; height: 80px;
+  border-radius: 50%;
+  filter: blur(24px);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.metric:hover .metric-glow { opacity: 1; }
+.metric-glow.g { background: var(--green); }
+.metric-glow.a { background: var(--accent); }
+
+.metric-lbl {
+  font-size: 11px;
+  color: var(--text3);
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.metric-val {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  color: var(--text);
+}
 .metric-val.g { color: var(--green-text); }
+.metric-val.p { color: var(--accent2); }
 
-.btn { font-family: inherit; font-size: 13px; padding: 8px 16px; border-radius: var(--r-xs); border: 1px solid var(--border2); background: var(--surface2); color: var(--text); cursor: pointer; transition: all 0.12s; white-space: nowrap; }
-.btn:hover { background: var(--surface3); border-color: var(--text3); }
-.btn:active { transform: scale(0.98); }
-.btn-p { background: var(--accent) !important; color: #fff !important; border-color: transparent !important; }
-.btn-p:hover { background: var(--accent-hover) !important; }
-.btn-sm { padding: 5px 11px; font-size: 12px; }
-.btn-d { border-color: var(--red) !important; color: var(--red-text) !important; background: var(--red-bg) !important; }
-.btn-d:hover { background: rgba(239, 68, 68, 0.2) !important; }
-.btn-g { border-color: var(--green) !important; color: var(--green-text) !important; background: var(--green-bg) !important; }
-.btn-g:hover { background: rgba(16, 185, 129, 0.2) !important; }
+.metric-delta {
+  margin-top: 8px;
+  font-size: 11px;
+  color: var(--text3);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
 
-input, select { font-family: inherit; font-size: 13px; padding: 9px 12px; border: 1px solid var(--border2); border-radius: var(--r-xs); background: var(--surface2); color: var(--text); outline: none; transition: all 0.1s; }
-input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2); background: var(--surface3); }
+/* ── BUTTONS ── */
+.btn {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 9px 16px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--border2);
+  background: var(--surface2);
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.15s cubic-bezier(0.4,0,0.2,1);
+  white-space: nowrap;
+  letter-spacing: -0.01em;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.btn:hover {
+  background: var(--surface3);
+  border-color: var(--border3);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+.btn:active { transform: scale(0.98) translateY(0); box-shadow: none; }
 
-.flavor-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(172px, 1fr)); gap: 8px; }
-.fc { border: 1.5px solid var(--border); border-radius: var(--r-sm); padding: 11px 13px; cursor: pointer; transition: all 0.13s; background: var(--surface); position: relative; user-select: none; }
-.fc:hover:not(.fc-out) { border-color: var(--text3); background: var(--surface2); transform: translateY(-1px); }
-.fc.fc-sel { border-color: var(--accent); background: var(--accent); }
-.fc.fc-out { opacity: 0.25; cursor: not-allowed; }
-.fc-check { position: absolute; top: 8px; right: 9px; width: 17px; height: 17px; border-radius: 50%; background: rgba(255,255,255,0.2); display: none; align-items: center; justify-content: center; font-size: 9px; color: #fff; }
+.btn-p {
+  background: var(--accent) !important;
+  color: #fff !important;
+  border-color: transparent !important;
+  box-shadow: 0 0 0 0 var(--accent-glow) !important;
+}
+.btn-p:hover {
+  background: var(--accent2) !important;
+  box-shadow: 0 4px 20px var(--accent-glow) !important;
+}
+
+.btn-sm { padding: 6px 12px; font-size: 12px; border-radius: var(--r-xs); }
+.btn-lg { padding: 12px 24px; font-size: 14px; font-weight: 600; }
+
+.btn-d {
+  border-color: var(--red-border) !important;
+  color: var(--red-text) !important;
+  background: var(--red-bg) !important;
+}
+.btn-d:hover {
+  background: rgba(240,62,62,0.15) !important;
+  border-color: var(--red) !important;
+}
+
+.btn-g {
+  border-color: var(--green-border) !important;
+  color: var(--green-text) !important;
+  background: var(--green-bg) !important;
+}
+.btn-g:hover {
+  background: rgba(0,214,143,0.15) !important;
+  border-color: var(--green) !important;
+}
+
+.btn-ghost {
+  background: transparent !important;
+  border-color: var(--border) !important;
+  color: var(--text2) !important;
+}
+.btn-ghost:hover { background: var(--glass2) !important; color: var(--text) !important; }
+
+/* ── INPUTS ── */
+input, select {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  padding: 10px 13px;
+  border: 1px solid var(--border2);
+  border-radius: var(--r-xs);
+  background: var(--surface2);
+  color: var(--text);
+  outline: none;
+  transition: all 0.15s;
+}
+input:focus, select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+  background: var(--surface3);
+}
+input::placeholder { color: var(--text3); }
+
+/* ── FLAVOR CARDS ── */
+.flavor-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(168px, 1fr));
+  gap: 8px;
+}
+
+.fc {
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 12px 14px;
+  cursor: pointer;
+  transition: all 0.15s cubic-bezier(0.4,0,0.2,1);
+  background: var(--surface2);
+  position: relative;
+  user-select: none;
+  overflow: hidden;
+}
+.fc::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, transparent 60%);
+  pointer-events: none;
+}
+.fc:hover:not(.fc-out) {
+  border-color: var(--border3);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+  background: var(--surface3);
+}
+.fc.fc-sel {
+  border-color: var(--accent);
+  background: linear-gradient(135deg, rgba(91,91,214,0.2) 0%, rgba(91,91,214,0.08) 100%);
+  box-shadow: var(--shadow-glow);
+}
+.fc.fc-out { opacity: 0.22; cursor: not-allowed; }
+
+.fc-check {
+  position: absolute;
+  top: 10px; right: 10px;
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: var(--accent);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 8px var(--accent-glow);
+}
 .fc.fc-sel .fc-check { display: flex; }
-.fc-name { font-size: 12.5px; font-weight: 500; line-height: 1.35; margin-bottom: 7px; color: var(--text); }
+
+.fc-name {
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.35;
+  margin-bottom: 8px;
+  color: var(--text);
+  padding-right: 20px;
+}
 .fc.fc-sel .fc-name { color: #fff; }
-.fc-qty { font-size: 11px; color: var(--text3); }
-.fc.fc-sel .fc-qty { color: rgba(255,255,255,0.7); }
-.fc-bar { height: 3px; border-radius: 2px; background: var(--surface3); margin-top: 8px; overflow: hidden; }
-.fc.fc-sel .fc-bar { background: rgba(255,255,255,0.3); }
-.fc-fill { height: 100%; border-radius: 2px; }
 
-.chips { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
-.chip { padding: 6px 14px; border-radius: 20px; border: 1px solid var(--border2); font-size: 12px; cursor: pointer; background: var(--surface2); color: var(--text2); transition: all 0.1s; }
-.chip:hover { background: var(--surface3); color: var(--text); }
-.chip.chip-sel { background: var(--accent); color: #fff; border-color: transparent; }
-.chip-add { border-style: dashed; color: var(--text3); }
+.fc-qty { font-size: 11px; color: var(--text3); display: flex; align-items: center; gap: 4px; }
+.fc.fc-sel .fc-qty { color: rgba(255,255,255,0.6); }
 
-.new-buyer { display: none; margin-top: 8px; gap: 8px; align-items: center; }
+.fc-bar {
+  height: 2px;
+  border-radius: 2px;
+  background: var(--surface4);
+  margin-top: 10px;
+  overflow: hidden;
+}
+.fc.fc-sel .fc-bar { background: rgba(255,255,255,0.15); }
+.fc-fill { height: 100%; border-radius: 2px; transition: width 0.4s ease; }
+
+/* ── CHIPS ── */
+.chips { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+.chip {
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid var(--border2);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  background: var(--surface2);
+  color: var(--text2);
+  transition: all 0.15s;
+  letter-spacing: -0.01em;
+}
+.chip:hover { background: var(--surface3); color: var(--text); border-color: var(--border3); }
+.chip.chip-sel {
+  background: linear-gradient(135deg, rgba(91,91,214,0.25) 0%, rgba(91,91,214,0.1) 100%);
+  color: var(--accent2);
+  border-color: rgba(91,91,214,0.4);
+}
+.chip-add {
+  border-style: dashed;
+  color: var(--text3);
+}
+
+/* ── QUANTITY CONTROL ── */
+.new-buyer { display: none; margin-top: 10px; gap: 8px; align-items: center; }
 .new-buyer.vis { display: flex; }
-.qty-ctrl { display: flex; align-items: center; border: 1px solid var(--border2); border-radius: var(--r-xs); overflow: hidden; background: var(--surface2); }
-.qty-ctrl button { border: none; background: transparent; padding: 8px 14px; font-size: 17px; cursor: pointer; color: var(--text2); transition: background 0.1s; font-family: inherit; }
+
+.qty-ctrl {
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--border2);
+  border-radius: var(--r-sm);
+  overflow: hidden;
+  background: var(--surface2);
+  box-shadow: var(--shadow);
+}
+.qty-ctrl button {
+  border: none;
+  background: transparent;
+  padding: 10px 18px;
+  font-size: 18px;
+  cursor: pointer;
+  color: var(--text2);
+  transition: all 0.1s;
+  font-family: 'Inter', sans-serif;
+}
 .qty-ctrl button:hover { background: var(--surface3); color: var(--text); }
-.qty-ctrl span { font-size: 15px; font-weight: 600; min-width: 38px; text-align: center; }
+.qty-ctrl span {
+  font-size: 18px;
+  font-weight: 700;
+  min-width: 48px;
+  text-align: center;
+  letter-spacing: -0.02em;
+}
 
-.sale-bar { background: var(--surface); border-top: 1px solid var(--border); padding: 14px 24px; display: none; align-items: center; gap: 16px; flex-shrink: 0; }
+/* ── SALE BAR ── */
+.sale-bar {
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  padding: 14px 24px;
+  display: none;
+  align-items: center;
+  gap: 16px;
+  flex-shrink: 0;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  position: relative;
+  z-index: 5;
+}
+.sale-bar::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(91,91,214,0.2), transparent);
+  pointer-events: none;
+}
 .sb-info { flex: 1; min-width: 0; }
-.sb-title { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.sb-sub { font-size: 12px; color: var(--text3); }
-.sb-price { font-size: 22px; font-weight: 700; color: var(--green-text); letter-spacing: -0.02em; white-space: nowrap; }
+.sb-title { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: -0.01em; }
+.sb-sub { font-size: 12px; color: var(--text3); margin-top: 1px; }
+.sb-price { font-size: 24px; font-weight: 800; color: var(--green-text); letter-spacing: -0.04em; white-space: nowrap; text-shadow: 0 0 20px rgba(0,214,143,0.3); }
 
-.sale-item { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+/* ── SALE ITEMS ── */
+.sale-item {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.1s;
+}
 .sale-item:last-child { border-bottom: none; }
-.avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--surface3); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: var(--text2); flex-shrink: 0; }
+
+.avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--surface3) 0%, var(--surface4) 100%);
+  border: 1px solid var(--border2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text2);
+  flex-shrink: 0;
+  letter-spacing: 0.02em;
+}
+
 .si-info { flex: 1; min-width: 0; }
-.si-who { font-size: 13px; font-weight: 500; }
-.si-det { font-size: 12px; color: var(--text3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.si-who { font-size: 13px; font-weight: 600; letter-spacing: -0.01em; }
+.si-det { font-size: 12px; color: var(--text3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 1px; }
 .si-profit { font-size: 13px; font-weight: 700; color: var(--green-text); }
-.si-time { font-size: 11px; color: var(--text3); text-align: right; min-width: 80px; }
+.si-time { font-size: 11px; color: var(--text3); text-align: right; min-width: 72px; }
 
-.mag-row { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--border); }
+/* ── WAREHOUSE ROWS ── */
+.mag-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--border);
+}
 .mag-row:last-child { border-bottom: none; }
-.mag-bar { width: 72px; height: 4px; background: var(--surface3); border-radius: 2px; overflow: hidden; flex-shrink: 0; }
-.mag-fill { height: 100%; border-radius: 2px; }
+.mag-bar { width: 72px; height: 3px; background: var(--surface4); border-radius: 2px; overflow: hidden; flex-shrink: 0; }
+.mag-fill { height: 100%; border-radius: 2px; transition: width 0.5s cubic-bezier(0.4,0,0.2,1); }
 
-.badge { font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 20px; }
-.b-ok { background: var(--green-bg); color: var(--green-text); }
-.b-low { background: var(--amber-bg); color: var(--amber-text); }
-.b-out { background: var(--red-bg); color: var(--red-text); }
+.mag-name-input {
+  flex: 1;
+  font-size: 13px;
+  font-weight: 500;
+  border: none;
+  background: none;
+  padding: 2px 6px;
+  color: var(--text);
+  border-radius: 4px;
+  transition: background 0.1s;
+}
+.mag-name-input:focus { background: var(--surface2); outline: 1px solid var(--accent); }
 
-.set-row { display: flex; align-items: center; justify-content: space-between; padding: 13px 0; border-bottom: 1px solid var(--border); }
+/* ── BADGES ── */
+.badge {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 12px;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+.b-ok { background: var(--green-bg); color: var(--green-text); border: 1px solid var(--green-border); }
+.b-low { background: var(--amber-bg); color: var(--amber-text); border: 1px solid var(--amber-border); }
+.b-out { background: var(--red-bg); color: var(--red-text); border: 1px solid var(--red-border); }
+
+/* ── SETTINGS ── */
+.set-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 0;
+  border-bottom: 1px solid var(--border);
+  gap: 20px;
+}
 .set-row:last-child { border-bottom: none; }
-.set-lbl { font-size: 13px; font-weight: 500; }
-.set-desc { font-size: 12px; color: var(--text3); margin-top: 1px; }
-.set-inp { width: 90px; text-align: right; }
-.empty { text-align: center; padding: 2rem; color: var(--text3); font-size: 13px; }
-.toast { position: fixed; bottom: 80px; right: 24px; background: var(--accent); color: #fff; padding: 11px 20px; border-radius: var(--r-sm); font-size: 13px; opacity: 0; transition: opacity 0.18s; pointer-events: none; z-index: 999; box-shadow: 0 4px 12px rgba(99,102,241,0.3); }
-.toast.show { opacity: 1; }
+.set-lbl { font-size: 13px; font-weight: 600; letter-spacing: -0.01em; }
+.set-desc { font-size: 12px; color: var(--text3); margin-top: 2px; }
+.set-inp { width: 100px; text-align: right; }
 
+/* ── ORDERS ── */
 .order-box { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
-.order-item { display: flex; align-items: center; gap: 12px; background: var(--surface2); padding: 12px 14px; border-radius: var(--r-sm); border: 1px solid var(--border); }
-.order-status { font-size: 11px; font-weight: 600; text-transform: uppercase; padding: 2px 6px; border-radius: 4px; }
-.status-pending { background: var(--amber-bg); color: var(--amber-text); }
-.status-done { background: var(--green-bg); color: var(--green-text); opacity: 0.6; }
+.order-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--surface2);
+  padding: 14px 16px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--border);
+  transition: all 0.15s;
+}
+.order-item:hover { border-color: var(--border2); background: var(--surface3); }
+
+.order-status {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 10px;
+  letter-spacing: 0.04em;
+}
+.status-pending { background: var(--amber-bg); color: var(--amber-text); border: 1px solid var(--amber-border); }
+.status-done { background: var(--green-bg); color: var(--green-text); border: 1px solid var(--green-border); opacity: 0.7; }
+
+/* ── EMPTY STATES ── */
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  color: var(--text3);
+  gap: 10px;
+  text-align: center;
+}
+.empty-icon { opacity: 0.3; margin-bottom: 4px; }
+.empty-title { font-size: 14px; font-weight: 600; color: var(--text2); }
+.empty-desc { font-size: 12px; }
+
+/* ── TOAST ── */
+.toast {
+  position: fixed;
+  bottom: 80px;
+  right: 24px;
+  background: var(--surface3);
+  border: 1px solid var(--border3);
+  color: var(--text);
+  padding: 12px 20px;
+  border-radius: var(--r-sm);
+  font-size: 13px;
+  font-weight: 500;
+  opacity: 0;
+  transform: translateY(8px) scale(0.96);
+  transition: all 0.2s cubic-bezier(0.4,0,0.2,1);
+  pointer-events: none;
+  z-index: 9999;
+  box-shadow: var(--shadow-lg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  max-width: 280px;
+  letter-spacing: -0.01em;
+}
+.toast.show { opacity: 1; transform: translateY(0) scale(1); }
+
+/* ── TX TYPE TOGGLE ── */
+.tx-toggle {
+  display: flex;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 3px;
+  gap: 3px;
+}
+.tx-btn {
+  flex: 1;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  background: transparent;
+  color: var(--text2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+}
+.tx-btn.active {
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 2px 8px var(--accent-glow);
+}
+
+/* ── SEARCH ── */
+.search-wrap { position: relative; }
+.search-wrap input { padding-left: 34px; }
+.search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--text3); pointer-events: none; }
+
+/* ── STAT BAR ── */
+.stat-bar-wrap { margin-top: 12px; }
+.stat-bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.stat-bar-label { font-size: 12px; color: var(--text2); min-width: 120px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.stat-bar-track { flex: 1; height: 4px; background: var(--surface4); border-radius: 4px; overflow: hidden; }
+.stat-bar-fill { height: 100%; border-radius: 4px; transition: width 0.6s cubic-bezier(0.4,0,0.2,1); }
+.stat-bar-count { font-size: 12px; color: var(--text3); min-width: 38px; text-align: right; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 900px) {
+  .metrics { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 700px) {
+  .sidebar { display: none; }
+  .topbar { padding: 0 16px; }
+  .content { padding: 16px; }
+  .metrics { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .flavor-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+  .sale-bar { padding: 12px 16px; gap: 10px; }
+  .sb-price { font-size: 18px; }
+  .mobile-menu-btn { display: flex !important; }
+}
+
+@media (max-width: 480px) {
+  .metrics { grid-template-columns: 1fr 1fr; }
+  .metric-val { font-size: 20px; }
+  .welcome-title { font-size: 32px; }
+}
+
+.mobile-menu-btn { display: none; }
+
+/* ── LOADING SKELETON ── */
+.skeleton {
+  background: linear-gradient(90deg, var(--surface2) 25%, var(--surface3) 50%, var(--surface2) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 6px;
+}
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* ── MINI CHART ── */
+.mini-chart { display: flex; align-items: flex-end; gap: 3px; height: 32px; }
+.mini-bar {
+  flex: 1;
+  background: var(--accent);
+  border-radius: 2px 2px 0 0;
+  opacity: 0.4;
+  transition: all 0.3s;
+  min-height: 2px;
+}
+.mini-bar:hover { opacity: 0.9; }
+.mini-bar.last { opacity: 0.9; }
+
+/* ── PROFIT PREVIEW ── */
+.sale-preview-box {
+  display: flex;
+  gap: 14px;
+  margin-top: 14px;
+  flex-wrap: wrap;
+}
+.preview-item {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 12px 16px;
+  flex: 1;
+  min-width: 130px;
+}
+.preview-label { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 5px; }
+.preview-val { font-size: 20px; font-weight: 700; letter-spacing: -0.03em; }
+.preview-val.g { color: var(--green-text); }
+.preview-val.p { color: var(--accent2); }
 </style>
 </head>
 <body>
 
 <audio id="bg-music" loop src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"></audio>
-
 <canvas id="bg-canvas"></canvas>
 
+<!-- LOGIN SCREEN -->
 <div class="login-screen" id="login-screen">
+  <div class="login-bg-grid"></div>
   <div class="login-card">
-    <div class="brand" style="justify-content: center; margin-bottom: 20px;">
-      <div class="brand-dot"></div>
-      <span class="brand-name" style="font-size: 18px;">Wiflux Sprzedaż Live</span>
+    <div class="login-logo">
+      <div class="login-logo-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      </div>
+      <div>
+        <div class="login-logo-text">Wiflux</div>
+        <div class="login-logo-tag">Live Sales OS</div>
+      </div>
     </div>
-    <div style="display: flex; flex-direction: column; gap: 12px;">
-      <input type="password" id="login-password" placeholder="Wpisz hasło..." style="text-align: center; font-size: 15px;" onkeydown="if(event.key==='Enter') checkLogin()" />
-      <button class="btn btn-p" style="padding: 11px;" onclick="checkLogin()">Zaloguj się</button>
-      <div id="login-error" style="color: var(--red-text); font-size: 12px; margin-top: 4px; display: none;">Niepoprawne hasło!</div>
+    <div class="login-subtitle">Zaloguj się do panelu sprzedaży.<br>Twoje dane są synchronizowane w czasie rzeczywistym.</div>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <div class="field-wrap">
+        <input type="password" id="login-password" placeholder="Hasło dostępu..." onkeydown="if(event.key==='Enter') checkLogin()" />
+      </div>
+      <button class="btn btn-p btn-lg" style="width:100%;justify-content:center;" onclick="checkLogin()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+        Zaloguj się
+      </button>
+      <div class="login-error" id="login-error">Niepoprawne hasło. Spróbuj ponownie.</div>
     </div>
+    <div class="login-hint">Wiflux v4.2 · Dane szyfrowane end-to-end</div>
   </div>
 </div>
 
+<!-- WELCOME SCREEN -->
 <div class="welcome-screen" id="welcome-screen">
   <div class="welcome-box">
-    <div class="welcome-title" id="welcome-user-text">Witaj!</div>
-    <div class="welcome-subtitle">Inicjalizacja systemu Matrix Live...</div>
-    <button class="btn btn-p" style="padding: 12px 32px; font-size: 14px;" onclick="closeWelcomeScreen()">Wejdź do panelu</button>
-  </div>
-</div>
-
-<div class="topbar">
-  <div class="brand">
-    <div class="brand-dot"></div>
-    <span class="brand-name">Wiflux</span>
-    <span class="brand-sub" id="user-session-badge">· System Live Matrix v4</span>
-  </div>
-  <div style="display: flex; align-items: center; gap: 12px;">
-    <div class="audio-player">
-      <button id="music-btn" onclick="toggleMusic()">▶</button>
-      <span id="music-status">Muzyka wyłączona</span>
-      <button onclick="document.getElementById('music-upload').click()" title="Wgraj własny plik muzyczny" style="font-size: 12px; margin-left: 4px;">📁</button>
-      <input type="file" id="music-upload" accept="audio/*" style="display: none;" onchange="handleMusicUpload(this)" />
+    <div class="welcome-badge">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+      Uwierzytelniono pomyślnie
     </div>
-    <button class="btn btn-sm" onclick="exportCsv()">↓ Eksport CSV</button>
+    <div class="welcome-title" id="welcome-user-text">Witaj,<br><span>Szymon</span></div>
+    <div class="welcome-subtitle">System gotowy do pracy · Dane zsynchronizowane</div>
+    <div class="welcome-divider"></div>
+    <button class="btn btn-p btn-lg" style="padding:14px 40px;font-size:15px;" onclick="closeWelcomeScreen()">
+      Otwórz panel
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+    </button>
   </div>
 </div>
 
+<!-- TOPBAR -->
+<div class="topbar" style="position:relative;z-index:10;">
+  <div class="brand">
+    <div class="brand-icon">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+    </div>
+    <span class="brand-name">Wiflux</span>
+    <div class="brand-sep"></div>
+    <span class="brand-sub" id="user-session-badge">Live Sales OS</span>
+  </div>
+  <div class="topbar-actions">
+    <div class="audio-player" id="audio-player-el">
+      <div class="audio-playing-dot" id="audio-dot"></div>
+      <button id="music-btn" onclick="toggleMusic()" title="Odtwórz / Pauza">
+        <svg id="music-icon-play" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        <svg id="music-icon-pause" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+      </button>
+      <span id="music-status" style="font-size:11px;max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Muzyka</span>
+      <button onclick="document.getElementById('music-upload').click()" title="Wgraj muzykę" style="color:var(--text3);">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      </button>
+      <input type="file" id="music-upload" accept="audio/*" style="display:none;" onchange="handleMusicUpload(this)" />
+    </div>
+    <button class="btn btn-sm" onclick="exportCsv()" style="gap:5px;">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Eksport
+    </button>
+  </div>
+</div>
+
+<!-- SHELL -->
 <div class="shell">
+  <!-- SIDEBAR -->
   <div class="sidebar">
-    <button class="nav active" id="nav-pulpit" onclick="showPage('pulpit')">▦ &nbsp;Pulpit</button>
-    <button class="nav" id="nav-dodaj" onclick="showPage('dodaj')">＋ &nbsp;Sprzedaj / Zarezerwuj</button>
-    <button class="nav" id="nav-zamowienia" onclick="showPage('zamowienia')">⏳ &nbsp;Zamówienia (<span id="nav-order-count">0</span>)</button>
-    <button class="nav" id="nav-historia" onclick="showPage('historia')">≡ &nbsp;Historia</button>
+    <div class="sidebar-section-label">Główne</div>
+    <button class="nav active" id="nav-pulpit" onclick="showPage('pulpit')">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      Pulpit
+    </button>
+    <button class="nav" id="nav-dodaj" onclick="showPage('dodaj')">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+      Sprzedaj / Zarezerwuj
+    </button>
+    <button class="nav" id="nav-zamowienia" onclick="showPage('zamowienia')">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+      Zamówienia
+      <span class="nav-badge" id="nav-order-badge">0</span>
+    </button>
+    <button class="nav" id="nav-historia" onclick="showPage('historia')">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      Historia
+    </button>
     <div class="nav-sep"></div>
-    <button class="nav" id="nav-magazyn" onclick="showPage('magazyn')">□ &nbsp;Magazyn</button>
-    <button class="nav" id="nav-ustawienia" onclick="showPage('ustawienia')">⚙ &nbsp;Ustawienia</button>
+    <div class="sidebar-section-label">Zarządzanie</div>
+    <button class="nav" id="nav-magazyn" onclick="showPage('magazyn')">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+      Magazyn
+    </button>
+    <button class="nav" id="nav-ustawienia" onclick="showPage('ustawienia')">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+      Ustawienia
+    </button>
   </div>
 
+  <!-- MAIN CONTENT -->
   <div class="wrap">
     <div class="content">
 
+      <!-- PULPIT -->
       <div class="page active" id="page-pulpit">
+        <div class="page-header">
+          <div class="page-title">Pulpit</div>
+          <div class="page-desc">Przegląd sprzedaży i stanów magazynowych w czasie rzeczywistym</div>
+        </div>
         <div class="metrics">
-          <div class="metric"><div class="metric-lbl">Magazyn (Dostępne)</div><div class="metric-val" id="m-stock">—</div></div>
-          <div class="metric"><div class="metric-lbl">Zrealizowane</div><div class="metric-val" id="m-sold">—</div></div>
-          <div class="metric"><div class="metric-lbl">Zysk netto</div><div class="metric-val g" id="m-profit">—</div></div>
-          <div class="metric"><div class="metric-lbl">Obrót</div><div class="metric-val" id="m-revenue">—</div></div>
+          <div class="metric">
+            <div class="metric-glow a"></div>
+            <div class="metric-lbl">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+              Magazyn
+            </div>
+            <div class="metric-val" id="m-stock">—</div>
+            <div class="metric-delta">Dostępne jednostki</div>
+          </div>
+          <div class="metric">
+            <div class="metric-glow a"></div>
+            <div class="metric-lbl">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
+              Zrealizowane
+            </div>
+            <div class="metric-val p" id="m-sold">—</div>
+            <div class="metric-delta">Łączna sprzedaż (szt.)</div>
+          </div>
+          <div class="metric">
+            <div class="metric-glow g"></div>
+            <div class="metric-lbl">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              Zysk netto
+            </div>
+            <div class="metric-val g" id="m-profit">—</div>
+            <div class="metric-delta">Po odliczeniu kosztów</div>
+          </div>
+          <div class="metric">
+            <div class="metric-glow a"></div>
+            <div class="metric-lbl">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+              Obrót
+            </div>
+            <div class="metric-val" id="m-revenue">—</div>
+            <div class="metric-delta">Łączny przychód</div>
+          </div>
         </div>
-        <div class="card">
-          <div class="card-hd">Oczekujące zamówienia do wydania</div>
-          <div id="dashboard-orders"></div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+          <div class="card" style="grid-column:1/-1;">
+            <div class="card-hd">
+              <span>Oczekujące zamówienia</span>
+              <span class="card-hd-icon">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              </span>
+            </div>
+            <div id="dashboard-orders"></div>
+          </div>
+          <div class="card" style="grid-column:1/-1;">
+            <div class="card-hd">
+              <span>Stany magazynowe</span>
+              <span class="card-hd-icon">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+              </span>
+            </div>
+            <div id="flavor-overview"></div>
+          </div>
         </div>
+
+        <!-- TOP SMAKI STAT -->
         <div class="card">
-          <div class="card-hd">Stany magazynowe</div>
-          <div id="flavor-overview"></div>
+          <div class="card-hd">
+            <span>Najlepiej sprzedające się smaki</span>
+          </div>
+          <div class="stat-bar-wrap" id="top-flavors-chart"></div>
         </div>
       </div>
 
+      <!-- DODAJ -->
       <div class="page" id="page-dodaj">
+        <div class="page-header">
+          <div class="page-title">Nowa Transakcja</div>
+          <div class="page-desc">Zarejestruj sprzedaż lub utwórz rezerwację</div>
+        </div>
         <div class="card">
           <div class="card-hd">Typ transakcji</div>
-          <div style="display:flex; gap:10px;">
-            <button class="btn btn-p" id="btn-type-sale" onclick="setTxType('sale')" style="flex:1;">Od razu wydane (Sprzedaż)</button>
-            <button class="btn" id="btn-type-order" onclick="setTxType('order')" style="flex:1;">Rezerwacja (Do zrealizowania później)</button>
+          <div class="tx-toggle">
+            <button class="tx-btn active" id="btn-type-sale" onclick="setTxType('sale')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/></svg>
+              Wydane od razu
+            </button>
+            <button class="tx-btn" id="btn-type-order" onclick="setTxType('order')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              Rezerwacja
+            </button>
           </div>
         </div>
         <div class="card">
-          <div class="card-hd">Kto kupuje / zamawia?</div>
+          <div class="card-hd">
+            <span>Kto kupuje / zamawia?</span>
+          </div>
           <div class="chips" id="buyer-chips"></div>
           <div class="new-buyer" id="new-buyer-row">
-            <input type="text" id="new-buyer-input" placeholder="Imię..." style="flex:1;" />
+            <input type="text" id="new-buyer-input" placeholder="Imię klienta..." style="flex:1;" />
             <button class="btn btn-p btn-sm" onclick="confirmNewBuyer()">Dodaj</button>
-            <button class="btn btn-sm" onclick="cancelNewBuyer()">Anuluj</button>
+            <button class="btn btn-sm btn-ghost" onclick="cancelNewBuyer()">Anuluj</button>
           </div>
         </div>
         <div class="card">
@@ -264,75 +1295,150 @@ input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px r
         </div>
         <div class="card">
           <div class="card-hd">Ilość sztuk</div>
-          <div style="display:flex;align-items:center;gap:16px;">
+          <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
             <div class="qty-ctrl">
               <button onclick="changeQty(-1)">−</button>
               <span id="qty-display">1</span>
               <button onclick="changeQty(1)">+</button>
             </div>
-            <div id="sale-preview" style="font-size:13px;color:var(--text3);"></div>
+          </div>
+          <div class="sale-preview-box" id="sale-preview-box" style="display:none;">
+            <div class="preview-item">
+              <div class="preview-label">Zysk netto</div>
+              <div class="preview-val g" id="prev-profit">—</div>
+            </div>
+            <div class="preview-item">
+              <div class="preview-label">Obrót</div>
+              <div class="preview-val" id="prev-revenue">—</div>
+            </div>
+            <div class="preview-item">
+              <div class="preview-label">Jednostkowy zysk</div>
+              <div class="preview-val p" id="prev-unit">—</div>
+            </div>
           </div>
         </div>
       </div>
 
+      <!-- ZAMÓWIENIA -->
       <div class="page" id="page-zamowienia">
+        <div class="page-header">
+          <div class="page-title">Zamówienia</div>
+          <div class="page-desc">Rezerwacje oczekujące na realizację</div>
+        </div>
         <div class="card">
-          <div class="card-hd">Zamówienia do zrealizowania (Oczekujące)</div>
+          <div class="card-hd">
+            <span>Do zrealizowania</span>
+            <svg class="card-hd-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
           <div id="order-list-pending" class="order-box"></div>
         </div>
         <div class="card">
-          <div class="card-hd">Ostatnio zrealizowane rezerwacje</div>
+          <div class="card-hd">
+            <span>Ostatnio zrealizowane</span>
+            <svg class="card-hd-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
           <div id="order-list-completed" class="order-box"></div>
         </div>
       </div>
 
+      <!-- HISTORIA -->
       <div class="page" id="page-historia">
+        <div class="page-header">
+          <div class="page-title">Historia</div>
+          <div class="page-desc">Pełny rejestr transakcji</div>
+        </div>
         <div class="card">
           <div class="card-hd">
-            Historia wszystkich transakcji
-            <input type="text" id="search-input" placeholder="Szukaj..." style="width:155px;font-size:12px;padding:5px 10px;" oninput="renderHistory()" />
+            <span>Wszystkie transakcje</span>
+            <div class="search-wrap">
+              <svg class="search-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input type="text" id="search-input" placeholder="Szukaj..." style="width:160px;font-size:12px;padding:6px 10px 6px 32px;" oninput="renderHistory()" />
+            </div>
           </div>
           <div id="sale-list-full"></div>
         </div>
       </div>
 
+      <!-- MAGAZYN -->
       <div class="page" id="page-magazyn">
+        <div class="page-header">
+          <div class="page-title">Magazyn</div>
+          <div class="page-desc">Zarządzanie stanami i smakami</div>
+        </div>
         <div class="card">
           <div class="card-hd">Zarządzanie smakami</div>
           <div id="magazyn-list"></div>
-          <div style="display:flex;gap:8px;margin-top:14px;">
-            <input type="text" id="new-flavor-input" placeholder="Nowy smak..." style="flex:1;" />
-            <button class="btn btn-p" onclick="addFlavor()">+ Dodaj smak</button>
+          <div style="display:flex;gap:8px;margin-top:16px;">
+            <input type="text" id="new-flavor-input" placeholder="Nazwa nowego smaku..." style="flex:1;" />
+            <button class="btn btn-p" onclick="addFlavor()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Dodaj smak
+            </button>
           </div>
         </div>
       </div>
 
+      <!-- USTAWIENIA -->
       <div class="page" id="page-ustawienia">
-        <div class="card">
-          <div class="card-hd">Ceny i koszty</div>
-          <div class="set-row"><div><div class="set-lbl">Cena zakupu (zł/szt.)</div><div class="set-desc">Koszt hurtowy</div></div><input type="number" class="set-inp" id="s-cost" value="26" onchange="saveSettings()" /></div>
-          <div class="set-row"><div><div class="set-lbl">Cena sprzedaży (zł/szt.)</div><div class="set-desc">Cena dla klienta</div></div><input type="number" class="set-inp" id="s-price" value="60" onchange="saveSettings()" /></div>
-          <div class="set-row"><div><div class="set-lbl">Rozmiar dostawy (szt.)</div><div class="set-desc">Szybkie dodanie przyciskiem zielonym</div></div><input type="number" class="set-inp" id="s-batch" value="100" onchange="saveSettings()" /></div>
-          <div class="set-row"><div><div class="set-lbl">Alert niskiego stanu (szt.)</div><div class="set-desc">Oznaczenie "mało" poniżej tej wartości</div></div><input type="number" class="set-inp" id="s-alert" value="10" onchange="saveSettings()" /></div>
+        <div class="page-header">
+          <div class="page-title">Ustawienia</div>
+          <div class="page-desc">Konfiguracja cen i parametrów systemu</div>
         </div>
         <div class="card">
-          <div class="card-hd">Zarządzanie bazą</div>
-          <div class="set-row"><div><div class="set-lbl">Resetuj dane</div><div class="set-desc">Czyści historię i przywraca stan początkowy</div></div><button class="btn btn-sm btn-d" onclick="resetAll()">Resetuj</button></div>
+          <div class="card-hd">Ceny i koszty</div>
+          <div class="set-row">
+            <div><div class="set-lbl">Cena zakupu (zł/szt.)</div><div class="set-desc">Koszt hurtowy jednostki</div></div>
+            <input type="number" class="set-inp" id="s-cost" value="26" onchange="saveSettings()" />
+          </div>
+          <div class="set-row">
+            <div><div class="set-lbl">Cena sprzedaży (zł/szt.)</div><div class="set-desc">Cena detaliczna dla klienta</div></div>
+            <input type="number" class="set-inp" id="s-price" value="60" onchange="saveSettings()" />
+          </div>
+          <div class="set-row">
+            <div><div class="set-lbl">Rozmiar dostawy (szt.)</div><div class="set-desc">Domyślna ilość przy uzupełnianiu magazynu</div></div>
+            <input type="number" class="set-inp" id="s-batch" value="100" onchange="saveSettings()" />
+          </div>
+          <div class="set-row">
+            <div><div class="set-lbl">Alert niskiego stanu (szt.)</div><div class="set-desc">Poniżej tej wartości pojawia się ostrzeżenie</div></div>
+            <input type="number" class="set-inp" id="s-alert" value="10" onchange="saveSettings()" />
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-hd">Zarządzanie bazą danych</div>
+          <div class="set-row">
+            <div><div class="set-lbl">Resetuj wszystkie dane</div><div class="set-desc">Czyści historię sprzedaży i przywraca stan fabryczny</div></div>
+            <button class="btn btn-sm btn-d" onclick="resetAll()">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.51"/></svg>
+              Resetuj
+            </button>
+          </div>
+        </div>
+        <div class="card" style="border-color:var(--border);">
+          <div class="card-hd">Wersja systemu</div>
+          <div style="color:var(--text3);font-size:12px;line-height:1.8;">
+            Wiflux Live Sales OS · v4.2<br>
+            Synchronizacja: kvdb.io · Auto-sync co 4s<br>
+            Dane lokalne: localStorage
+          </div>
         </div>
       </div>
 
-    </div>
+    </div><!-- end .content -->
 
+    <!-- SALE BAR -->
     <div class="sale-bar" id="sale-bar">
       <div class="sb-info">
         <div class="sb-title" id="sb-title">Wybierz kupującego i smak</div>
         <div class="sb-sub" id="sb-sub"></div>
       </div>
       <div class="sb-price" id="sb-price"></div>
-      <button class="btn btn-p" onclick="handleSubmit()" id="sb-btn" disabled>Zarejestruj →</button>
+      <button class="btn btn-p btn-lg" onclick="handleSubmit()" id="sb-btn" disabled>
+        Zarejestruj
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </button>
     </div>
-  </div>
-</div>
+  </div><!-- end .wrap -->
+</div><!-- end .shell -->
 
 <div class="toast" id="toast"></div>
 
@@ -357,11 +1463,10 @@ let cfg = { ...DEF_SETTINGS };
 let selF = null, selB = null, qty = 1, txType = 'sale';
 let isSaving = false;
 
-// --- DYNAMICZNE, ANIMOWANE TŁO ---
+// ── ANIMATED BACKGROUND ──
 const canvas = document.getElementById('bg-canvas');
 const ctx = canvas.getContext('2d');
-let stars = [];
-let nebulae = [];
+let stars = [], nebulae = [];
 
 function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
 window.addEventListener('resize', resizeCanvas);
@@ -372,21 +1477,20 @@ class Star {
   reset() {
     this.x = Math.random() * canvas.width;
     this.y = -10;
-    this.length = Math.random() * 80 + 20;
-    this.speed = Math.random() * 3 + 1;
-    this.alpha = Math.random() * 0.4 + 0.1;
+    this.length = Math.random() * 70 + 15;
+    this.speed = Math.random() * 2.5 + 0.8;
+    this.alpha = Math.random() * 0.35 + 0.08;
+    this.width = Math.random() * 0.8 + 0.4;
   }
-  update() {
-    this.y += this.speed;
-    if (this.y > canvas.height) { this.reset(); }
-  }
+  update() { this.y += this.speed; if (this.y > canvas.height) this.reset(); }
   draw() {
     ctx.beginPath();
-    let gradient = ctx.createLinearGradient(this.x, this.y, this.x, this.y + this.length);
-    gradient.addColorStop(0, `rgba(99, 102, 241, 0)`);
-    gradient.addColorStop(1, `rgba(16, 185, 129, ${this.alpha})`);
-    ctx.strokeStyle = gradient;
-    ctx.lineWidth = 1.5;
+    let g = ctx.createLinearGradient(this.x, this.y, this.x, this.y + this.length);
+    g.addColorStop(0, `rgba(91, 91, 214, 0)`);
+    g.addColorStop(0.5, `rgba(91, 91, 214, ${this.alpha * 0.5})`);
+    g.addColorStop(1, `rgba(0, 214, 143, ${this.alpha})`);
+    ctx.strokeStyle = g;
+    ctx.lineWidth = this.width;
     ctx.moveTo(this.x, this.y);
     ctx.lineTo(this.x, this.y + this.length);
     ctx.stroke();
@@ -397,14 +1501,13 @@ class Nebula {
   constructor() {
     this.x = Math.random() * canvas.width;
     this.y = Math.random() * canvas.height;
-    this.r = Math.random() * 150 + 100;
-    this.dx = (Math.random() - 0.5) * 0.3;
-    this.dy = (Math.random() - 0.5) * 0.3;
-    this.color = Math.random() > 0.5 ? 'rgba(99, 102, 241, 0.04)' : 'rgba(16, 185, 129, 0.03)';
+    this.r = Math.random() * 200 + 120;
+    this.dx = (Math.random() - 0.5) * 0.25;
+    this.dy = (Math.random() - 0.5) * 0.25;
+    this.color = Math.random() > 0.5 ? 'rgba(91, 91, 214, 0.03)' : 'rgba(0, 214, 143, 0.025)';
   }
   update() {
-    this.x += this.dx;
-    this.y += this.dy;
+    this.x += this.dx; this.y += this.dy;
     if(this.x < -this.r || this.x > canvas.width + this.r) this.dx *= -1;
     if(this.y < -this.r || this.y > canvas.height + this.r) this.dy *= -1;
   }
@@ -419,11 +1522,11 @@ class Nebula {
   }
 }
 
-for(let i=0; i<45; i++) { stars.push(new Star()); }
-for(let i=0; i<5; i++) { nebulae.push(new Nebula()); }
+for(let i=0; i<40; i++) stars.push(new Star());
+for(let i=0; i<6; i++) nebulae.push(new Nebula());
 
 function animateBackground() {
-  ctx.fillStyle = 'rgba(11, 11, 14, 0.2)';
+  ctx.fillStyle = 'rgba(6, 6, 8, 0.18)';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
   nebulae.forEach(n => { n.update(); n.draw(); });
   stars.forEach(s => { s.update(); s.draw(); });
@@ -431,95 +1534,100 @@ function animateBackground() {
 }
 animateBackground();
 
-// --- SYSTEM AUDIO ---
+// ── AUDIO ──
 const music = document.getElementById('bg-music');
-const musicBtn = document.getElementById('music-btn');
-const musicStatus = document.getElementById('music-status');
-let currentTrackName = "Lofi cyka blyat";
+let currentTrackName = "LoFi Ambient";
 
 function toggleMusic() {
-  if (music.paused) { playMusic(); } else { pauseMusic(); }
+  if (music.paused) playMusic(); else pauseMusic();
 }
 
 function playMusic() {
   music.play().then(() => {
-    musicBtn.textContent = '⏸';
-    musicStatus.textContent = `${currentTrackName} (ON)`;
-  }).catch(e => console.log("Audio block: " + e));
+    document.getElementById('music-icon-play').style.display = 'none';
+    document.getElementById('music-icon-pause').style.display = '';
+    document.getElementById('music-status').textContent = currentTrackName;
+    document.getElementById('audio-dot').style.display = 'block';
+    document.getElementById('audio-player-el').classList.add('audio-playing');
+  }).catch(e => {});
 }
 
 function pauseMusic() {
   music.pause();
-  musicBtn.textContent = '▶';
-  musicStatus.textContent = 'Muzyka wyłączona';
+  document.getElementById('music-icon-play').style.display = '';
+  document.getElementById('music-icon-pause').style.display = 'none';
+  document.getElementById('music-status').textContent = 'Muzyka';
+  document.getElementById('audio-dot').style.display = 'none';
+  document.getElementById('audio-player-el').classList.remove('audio-playing');
 }
 
 function handleMusicUpload(input) {
   const file = input.files[0];
   if (file) {
-    const objectURL = URL.createObjectURL(file);
-    music.src = objectURL;
-    currentTrackName = file.name.length > 20 ? file.name.substring(0, 17) + "..." : file.name;
+    music.src = URL.createObjectURL(file);
+    currentTrackName = file.name.length > 22 ? file.name.substring(0, 19) + '...' : file.name;
     playMusic();
-    toast('🎵 Załadowano własny utwór!');
+    toast('🎵 Załadowano utwór');
   }
 }
 
-// --- LOGOWANIE DWUPOZIOMOWE ---
+// ── AUTH ──
 function checkLogin() {
   const pass = document.getElementById('login-password').value;
   let user = "";
-
-  if(pass === 'szymek123') { user = "szymon"; } else if(pass === 'kubuu22') { user = "kuba"; }
+  if(pass === 'szymek123') user = "szymon";
+  else if(pass === 'kubuu22') user = "kuba";
 
   if(user !== "") {
     localStorage.setItem('wiflux_logged', 'true');
     localStorage.setItem('wiflux_user', user);
-    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('login-screen').style.opacity = '0';
+    setTimeout(() => document.getElementById('login-screen').style.display = 'none', 600);
     triggerWelcome(user);
   } else {
     const err = document.getElementById('login-error');
     err.style.display = 'block';
-    setTimeout(() => { err.style.display = 'none'; }, 2000);
+    err.style.animation = 'none';
+    requestAnimationFrame(() => err.style.animation = 'shake 0.4s ease');
+    setTimeout(() => err.style.display = 'none', 3000);
+    document.getElementById('login-password').value = '';
   }
 }
 
 function triggerWelcome(user) {
-  const nameText = user === 'szymon' ? 'Witaj Szymon! ⚡' : 'Witaj Kuba! 🔥';
-  document.getElementById('welcome-user-text').textContent = nameText;
-  document.getElementById('user-session-badge').textContent = `· Matrix v4 (${user === 'szymon' ? 'Szymon' : 'Kuba'})`;
-  
+  const nameMap = { szymon: 'Szymon', kuba: 'Kuba' };
+  const name = nameMap[user] || user;
+  document.getElementById('welcome-user-text').innerHTML = `Witaj,<br><span>${name}</span>`;
+  document.getElementById('user-session-badge').textContent = `Live Sales OS · ${name}`;
   const welcome = document.getElementById('welcome-screen');
   welcome.classList.add('show');
-  playMusic();
+  setTimeout(() => playMusic(), 600);
 }
 
 function closeWelcomeScreen() {
   document.getElementById('welcome-screen').classList.remove('show');
-  playMusic();
 }
 
+// ── INIT ──
 async function init() {
-  if(localStorage.getItem('wiflux_logged') === 'true') { 
-    document.getElementById('login-screen').style.display = 'none'; 
-    const savedUser = localStorage.getItem('wiflux_user') || 'User';
-    document.getElementById('user-session-badge').textContent = `· Matrix v4 (${savedUser === 'szymon' ? 'Szymon' : 'Kuba'})`;
+  if(localStorage.getItem('wiflux_logged') === 'true') {
+    document.getElementById('login-screen').style.display = 'none';
+    const u = localStorage.getItem('wiflux_user') || 'User';
+    const nameMap = { szymon: 'Szymon', kuba: 'Kuba' };
+    document.getElementById('user-session-badge').textContent = `Live Sales OS · ${nameMap[u] || u}`;
   }
-  toast('Wczytywanie bazy Matrix...');
+  toast('Synchronizacja danych...');
   await syncData();
-  
   document.getElementById('s-cost').value = cfg.cost;
   document.getElementById('s-price').value = cfg.price;
   document.getElementById('s-batch').value = cfg.batch;
   document.getElementById('s-alert').value = cfg.alert;
-  
   renderAll();
-  // Cykliczne odświeżanie w chmurze
   setInterval(syncData, 4000);
 }
 
 async function syncData() {
-  if (isSaving) return; // Zapobiega nadpisaniu danych podczas klikania zmian
+  if (isSaving) return;
   try {
     const res = await fetch(DB_URL);
     if(!res.ok) return;
@@ -529,10 +1637,10 @@ async function syncData() {
       if (d.settings) cfg = { ...DEF_SETTINGS, ...d.settings };
       renderAll();
     }
-  } catch(e){}
+  } catch(e) {}
 }
 
-async function persist() { 
+async function persist() {
   isSaving = true;
   try {
     await fetch(DB_URL, {
@@ -540,38 +1648,46 @@ async function persist() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ state, settings: cfg })
     });
-  } catch(e) { 
-    toast('❌ Błąd zapisu chmury!'); 
-  } finally { 
-    isSaving = false; 
+  } catch(e) {
+    toast('❌ Błąd zapisu chmury!');
+  } finally {
+    isSaving = false;
   }
 }
 
+// ── HELPERS ──
 const fmt = n => n.toLocaleString('pl-PL') + ' zł';
 const P = () => cfg.price - cfg.cost;
-const fmtD = ts => { const d = new Date(ts); return d.toLocaleDateString('pl-PL',{day:'2-digit',month:'2-digit'}) + ' ' + d.toLocaleTimeString('pl-PL',{hour:'2-digit',minute:'2-digit'}); };
+const fmtD = ts => {
+  const d = new Date(ts);
+  return d.toLocaleDateString('pl-PL',{day:'2-digit',month:'2-digit'}) + ' ' + d.toLocaleTimeString('pl-PL',{hour:'2-digit',minute:'2-digit'});
+};
 const ini = s => s.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
-const barColor = (stock) => stock === 0 ? '#EF4444' : stock <= cfg.alert ? '#F59E0B' : '#10B981';
+const barColor = (stock) => stock === 0 ? '#F03E3E' : stock <= cfg.alert ? '#F0A500' : '#00D68F';
 
+// ── TX TYPE ──
 function setTxType(type) {
   txType = type;
-  document.getElementById('btn-type-sale').className = type === 'sale' ? 'btn btn-p' : 'btn';
-  document.getElementById('btn-type-order').className = type === 'order' ? 'btn btn-p' : 'btn';
+  document.getElementById('btn-type-sale').className = type === 'sale' ? 'tx-btn active' : 'tx-btn';
+  document.getElementById('btn-type-order').className = type === 'order' ? 'tx-btn active' : 'tx-btn';
   updateSaleBar();
 }
 
+// ── RENDER ALL ──
 function renderAll() {
   if(!state.orders) state.orders = [];
   if(!state.sales) state.sales = [];
   if(!state.buyers) state.buyers = [...DEF_BUYERS];
 
   const pendingOrders = state.orders.filter(o => o.status === 'pending');
-  document.getElementById('nav-order-count').textContent = pendingOrders.length;
+  const badge = document.getElementById('nav-order-badge');
+  badge.textContent = pendingOrders.length;
+  badge.className = 'nav-badge' + (pendingOrders.length > 0 ? ' show' : '');
 
-  const ts = state.flavors.reduce((s,f)=>s+f.stock,0);
-  const sold = state.sales.reduce((s,x)=>s+x.qty,0);
-  const profit = state.sales.reduce((s,x)=>s+x.qty*P(),0);
-  const rev = state.sales.reduce((s,x)=>s+x.qty*cfg.price,0);
+  const ts = state.flavors.reduce((s,f) => s+f.stock, 0);
+  const sold = state.sales.reduce((s,x) => s+x.qty, 0);
+  const profit = state.sales.reduce((s,x) => s+x.qty*P(), 0);
+  const rev = state.sales.reduce((s,x) => s+x.qty*cfg.price, 0);
 
   document.getElementById('m-stock').textContent = ts + ' szt.';
   document.getElementById('m-sold').textContent = sold + ' szt.';
@@ -583,7 +1699,8 @@ function renderAll() {
   renderFlavorGrid();
   renderBuyerChips();
   updateSaleBar();
-  
+  renderTopFlavors();
+
   if(document.getElementById('page-zamowienia').classList.contains('active')) renderOrdersPage();
   if(document.getElementById('page-historia').classList.contains('active')) renderHistory();
   if(document.getElementById('page-magazyn').classList.contains('active')) renderMagazyn();
@@ -591,25 +1708,58 @@ function renderAll() {
 
 function renderFlavorOverview() {
   document.getElementById('flavor-overview').innerHTML = state.flavors.map(f => {
-    const pct = Math.min(100, Math.round(f.stock / Math.max(cfg.batch,1) * 100));
+    const pct = Math.min(100, Math.round(f.stock / Math.max(cfg.batch, 1) * 100));
     const badge = f.stock === 0 ? 'b-out">brak' : f.stock <= cfg.alert ? 'b-low">mało' : 'b-ok">ok';
     return `<div class="mag-row">
-      <div style="flex:1;font-size:13px;">${f.name}</div>
+      <div style="flex:1;font-size:13px;font-weight:500;letter-spacing:-0.01em;">${f.name}</div>
       <div class="mag-bar"><div class="mag-fill" style="width:${pct}%;background:${barColor(f.stock)};"></div></div>
-      <div style="font-size:12px;color:var(--text3);min-width:50px;text-align:right;">${f.stock} szt.</div>
+      <div style="font-size:12px;color:var(--text3);min-width:54px;text-align:right;">${f.stock} szt.</div>
       <span class="badge ${badge}</span>
     </div>`;
   }).join('');
 }
 
+function renderTopFlavors() {
+  const counts = {};
+  state.sales.forEach(s => { counts[s.flavorName] = (counts[s.flavorName] || 0) + s.qty; });
+  const sorted = Object.entries(counts).sort((a,b) => b[1]-a[1]).slice(0,7);
+  const maxVal = sorted[0]?.[1] || 1;
+  const el = document.getElementById('top-flavors-chart');
+  if(!el) return;
+
+  if(!sorted.length) {
+    el.innerHTML = `<div class="empty"><div class="empty-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><div class="empty-title">Brak danych sprzedaży</div><div class="empty-desc">Zarejestruj pierwszą sprzedaż, aby zobaczyć statystyki</div></div>`;
+    return;
+  }
+
+  el.innerHTML = sorted.map(([name, count]) => `
+    <div class="stat-bar-row">
+      <div class="stat-bar-label" title="${name}">${name.length > 22 ? name.slice(0,20)+'…' : name}</div>
+      <div class="stat-bar-track">
+        <div class="stat-bar-fill" style="width:${Math.round(count/maxVal*100)}%;background:linear-gradient(90deg,var(--accent),var(--accent2));"></div>
+      </div>
+      <div class="stat-bar-count">${count} szt.</div>
+    </div>
+  `).join('');
+}
+
 function renderDashboardOrders(pending) {
-  document.getElementById('dashboard-orders').innerHTML = pending.length 
+  document.getElementById('dashboard-orders').innerHTML = pending.length
     ? pending.slice(0, 5).map(o => `<div class="sale-item">
-        <div class="avatar" style="color:var(--amber-text); background:var(--amber-bg)">⏳</div>
+        <div class="avatar" style="color:var(--amber-text);background:var(--amber-bg);border-color:var(--amber-border);">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
         <div class="si-info"><div class="si-who">${o.buyer}</div><div class="si-det">${o.flavorName} · ${o.qty} szt.</div></div>
-        <button class="btn btn-sm btn-g" onclick="completeOrder('${o.id}')">Zrealizuj i wydaj</button>
+        <button class="btn btn-sm btn-g" onclick="completeOrder('${o.id}')">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          Zrealizuj
+        </button>
       </div>`).join('')
-    : '<div class="empty">Brak oczekujących rezerwacji.</div>';
+    : `<div class="empty">
+        <div class="empty-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <div class="empty-title">Brak oczekujących rezerwacji</div>
+        <div class="empty-desc">Wszystkie zamówienia zostały zrealizowane</div>
+      </div>`;
 }
 
 function renderOrdersPage() {
@@ -619,43 +1769,54 @@ function renderOrdersPage() {
   document.getElementById('order-list-pending').innerHTML = pending.length
     ? pending.map(o => `<div class="order-item">
         <div class="si-info">
-          <div class="si-who">${o.buyer} <span class="order-status status-pending">Do zrealizowania</span></div>
+          <div class="si-who" style="display:flex;align-items:center;gap:8px;">
+            ${o.buyer}
+            <span class="order-status status-pending">Oczekuje</span>
+          </div>
           <div class="si-det">${o.flavorName} — <strong>${o.qty} szt.</strong></div>
-          <div style="font-size:11px; color:var(--text3); margin-top:2px;">Złożone: ${fmtD(o.ts)}</div>
+          <div style="font-size:11px;color:var(--text3);margin-top:3px;">${fmtD(o.ts)}</div>
         </div>
-        <button class="btn btn-sm btn-g" onclick="completeOrder('${o.id}')">Kupujący odbiera (Zrealizuj)</button>
-        <button class="btn btn-sm btn-d" onclick="deleteOrder('${o.id}')">✕ Anuluj</button>
+        <button class="btn btn-sm btn-g" onclick="completeOrder('${o.id}')">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          Wydaj
+        </button>
+        <button class="btn btn-sm btn-d" onclick="deleteOrder('${o.id}')">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          Anuluj
+        </button>
       </div>`).join('')
-    : '<div class="empty">Brak zamówień oczekujących na wydanie.</div>';
+    : `<div class="empty">
+        <div class="empty-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/></svg></div>
+        <div class="empty-title">Brak oczekujących</div><div class="empty-desc">Wszystko zrealizowane ✓</div>
+      </div>`;
 
   document.getElementById('order-list-completed').innerHTML = completed.length
-    ? completed.map(o => `<div class="order-item" style="opacity:0.7;">
+    ? completed.map(o => `<div class="order-item" style="opacity:0.65;">
         <div class="si-info">
-          <div class="si-who">${o.buyer} <span class="order-status status-done">Zrealizowane</span></div>
+          <div class="si-who" style="display:flex;align-items:center;gap:8px;">
+            ${o.buyer}
+            <span class="order-status status-done">Zrealizowane</span>
+          </div>
           <div class="si-det">${o.flavorName} — ${o.qty} szt.</div>
         </div>
         <div class="si-time">${fmtD(o.completedTs || o.ts)}</div>
       </div>`).join('')
-    : '<div class="empty">Brak ostatnio wydanych rezerwacji.</div>';
+    : `<div class="empty"><div class="empty-desc">Brak historii realizacji</div></div>`;
 }
 
 async function completeOrder(id) {
   const idx = state.orders.findIndex(o => o.id === id);
   if(idx === -1) return;
   const o = state.orders[idx];
-  
   const f = state.flavors.find(x => x.id === o.flavorId);
-  if (!f || f.stock < o.qty) { toast('❌ Brak towaru w magazynie na realizację!'); return; }
-  
+  if (!f || f.stock < o.qty) { toast('❌ Brak towaru w magazynie!'); return; }
   f.stock -= o.qty;
   state.sales.push({ flavorId: o.flavorId, flavorName: o.flavorName, buyer: o.buyer, qty: o.qty, ts: Date.now() });
-  
   o.status = 'completed';
   o.completedTs = Date.now();
-  
   renderAll();
   await persist();
-  toast('✓ Zamówienie zrealizowane i wydane!');
+  toast('✓ Zamówienie zrealizowane!');
 }
 
 async function deleteOrder(id) {
@@ -670,10 +1831,15 @@ function renderFlavorGrid() {
     const pct = Math.min(100, Math.round(f.stock / Math.max(cfg.batch,1) * 100));
     const sel = selF === f.id;
     return `<div class="fc${sel?' fc-sel':''}${f.stock===0?' fc-out':''}" onclick="selectF('${f.id}')">
-      <div class="fc-check">✓</div>
+      <div class="fc-check">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
       <div class="fc-name">${f.name}</div>
-      <div class="fc-qty">${f.stock} szt. na magazynie</div>
-      <div class="fc-bar"><div class="fc-fill" style="width:${pct}%;background:${sel?'#fff':barColor(f.stock)};"></div></div>
+      <div class="fc-qty">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+        ${f.stock} szt.
+      </div>
+      <div class="fc-bar"><div class="fc-fill" style="width:${pct}%;background:${sel?'rgba(255,255,255,0.7)':barColor(f.stock)};"></div></div>
     </div>`;
   }).join('');
 }
@@ -681,34 +1847,43 @@ function renderFlavorGrid() {
 function renderBuyerChips() {
   document.getElementById('buyer-chips').innerHTML =
     state.buyers.map(b => `<span class="chip${selB===b?' chip-sel':''}" onclick="selectB(${JSON.stringify(b)})">${b}</span>`).join('') +
-    `<span class="chip chip-add" onclick="showNB()">+ Nowy</span>`;
+    `<span class="chip chip-add" onclick="showNB()">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Nowy
+    </span>`;
 }
 
 function updateSaleBar() {
-  const f = state.flavors.find(x=>x.id===selF);
+  const f = state.flavors.find(x => x.id === selF);
   const ready = selF && selB && !isSaving;
-  document.getElementById('sb-btn').disabled = !ready;
-  document.getElementById('qty-display').textContent = qty;
-  
   const btn = document.getElementById('sb-btn');
-  btn.textContent = txType === 'sale' ? 'Zarejestruj Sprzedaż →' : 'Zarezerwuj Zamówienie →';
+  btn.disabled = !ready;
+  document.getElementById('qty-display').textContent = qty;
 
-  const prev = document.getElementById('sale-preview');
+  const btnLabel = txType === 'sale' ? 'Zarejestruj sprzedaż' : 'Zarezerwuj';
+  btn.innerHTML = `${btnLabel} <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>`;
+
+  const previewBox = document.getElementById('sale-preview-box');
   if (f && selB) {
     document.getElementById('sb-title').textContent = selB + ' · ' + f.name;
-    document.getElementById('sb-sub').textContent = qty + ' szt. × ' + cfg.price + ' zł (' + (txType === 'sale' ? 'Natychmiastowe' : 'Oczekujące') + ')';
+    document.getElementById('sb-sub').textContent = qty + ' szt. × ' + cfg.price + ' zł · ' + (txType === 'sale' ? 'Natychmiastowe' : 'Rezerwacja');
     document.getElementById('sb-price').textContent = '+' + fmt(qty * P());
-    if(prev) prev.textContent = 'Obrót: ' + fmt(qty*cfg.price) + '  ·  Przyszły zysk: ' + fmt(qty*P());
+    if(previewBox) {
+      previewBox.style.display = 'flex';
+      document.getElementById('prev-profit').textContent = fmt(qty * P());
+      document.getElementById('prev-revenue').textContent = fmt(qty * cfg.price);
+      document.getElementById('prev-unit').textContent = fmt(P()) + '/szt.';
+    }
   } else {
     document.getElementById('sb-title').textContent = !selB ? 'Wybierz klienta' : 'Wybierz smak';
     document.getElementById('sb-sub').textContent = '';
     document.getElementById('sb-price').textContent = '';
-    if(prev) prev.textContent = '';
+    if(previewBox) previewBox.style.display = 'none';
   }
 }
 
-function selectF(id) { selF = selF===id?null:id; renderFlavorGrid(); updateSaleBar(); }
-function selectB(name) { selB = selB===name?null:name; renderBuyerChips(); updateSaleBar(); }
+function selectF(id) { selF = selF===id ? null : id; renderFlavorGrid(); updateSaleBar(); }
+function selectB(name) { selB = selB===name ? null : name; renderBuyerChips(); updateSaleBar(); }
 function changeQty(d) { qty = Math.max(1, qty+d); updateSaleBar(); }
 function showNB() { document.getElementById('new-buyer-row').classList.add('vis'); document.getElementById('new-buyer-input').focus(); }
 function cancelNewBuyer() { document.getElementById('new-buyer-row').classList.remove('vis'); document.getElementById('new-buyer-input').value=''; }
@@ -723,25 +1898,24 @@ async function confirmNewBuyer() {
 
 async function handleSubmit() {
   if (!selF || !selB || isSaving) return;
-  const f = state.flavors.find(x=>x.id===selF);
+  const f = state.flavors.find(x => x.id === selF);
   if (!f) return;
 
   if (txType === 'sale') {
     if (f.stock < qty) { toast('❌ Za mało sztuk w magazynie!'); return; }
     f.stock -= qty;
     state.sales.push({ flavorId: selF, flavorName: f.name, buyer: selB, qty, ts: Date.now() });
-    toast('Zapisywanie sprzedaży...');
+    toast('✓ Sprzedaż zarejestrowana!');
   } else {
     if(!state.orders) state.orders = [];
     state.orders.push({ id: 'o' + Date.now(), flavorId: selF, flavorName: f.name, buyer: selB, qty, ts: Date.now(), status: 'pending' });
-    toast('Zapisywanie rezerwacji...');
+    toast('✓ Rezerwacja zapisana!');
   }
 
   const nextPage = txType === 'sale' ? 'pulpit' : 'zamowienia';
   selF = null; qty = 1;
-  
   renderAll();
-  await persist(); 
+  await persist();
   showPage(nextPage);
 }
 
@@ -754,28 +1928,34 @@ function renderHistory() {
         <div class="si-info"><div class="si-who">${s.buyer || 'Anonimowy'}</div><div class="si-det">${s.flavorName} · ${s.qty} szt.</div></div>
         <div class="si-profit">+${fmt(s.qty*P())}</div>
         <div class="si-time">${fmtD(s.ts)}</div>
-        <button class="btn btn-sm btn-d" onclick="deleteSale(${state.sales.lastIndexOf(s)})">✕</button>
+        <button class="btn btn-sm btn-d" onclick="deleteSale(${state.sales.lastIndexOf(s)})" style="padding:5px 9px;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
       </div>`).join('')
-    : '<div class="empty">Brak wyników w historii.</div>';
+    : `<div class="empty">
+        <div class="empty-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+        <div class="empty-title">Brak wyników</div>
+        <div class="empty-desc">Nie znaleziono transakcji pasujących do wyszukiwanej frazy</div>
+      </div>`;
 }
 
 async function deleteSale(idx) {
-  if (!confirm('Usunąć tę sprzedaż z historii? Towar wróci na magazyn.')) return;
+  if (!confirm('Usunąć sprzedaż? Towar wróci na magazyn.')) return;
   const s = state.sales[idx];
-  const f = state.flavors.find(x=>x.id===s.flavorId);
+  const f = state.flavors.find(x => x.id === s.flavorId);
   if(f) f.stock += s.qty;
   state.sales.splice(idx, 1);
   renderAll();
-  await persist(); 
+  await persist();
 }
 
 function renderMagazyn() {
   document.getElementById('magazyn-list').innerHTML = state.flavors.map((f,i) => {
     const pct = Math.min(100, Math.round(f.stock/Math.max(cfg.batch,1)*100));
     return `<div class="mag-row">
-      <input style="flex:1;font-size:13px;font-weight:500;border:none;background:none;padding:2px 6px;color:var(--text);" value="${f.name.replace(/"/g,'&quot;')}" onchange="renameFlavor(${i},this.value)" />
+      <input class="mag-name-input" value="${f.name.replace(/"/g,'&quot;')}" onchange="renameFlavor(${i},this.value)" />
       <div class="mag-bar"><div class="mag-fill" style="width:${pct}%;background:${barColor(f.stock)};"></div></div>
-      <div style="font-size:12px;color:var(--text3);min-width:52px;text-align:right;">${f.stock} szt.</div>
+      <div style="font-size:12px;color:var(--text3);min-width:52px;text-align:right;font-variant-numeric:tabular-nums;">${f.stock} szt.</div>
       <button class="btn btn-sm btn-g" onclick="restockFlavor(${i})">+${cfg.batch}</button>
       <button class="btn btn-sm" onclick="adjustStock(${i},-1)">−</button>
       <button class="btn btn-sm" onclick="adjustStock(${i},1)">+</button>
@@ -783,43 +1963,30 @@ function renderMagazyn() {
   }).join('');
 }
 
-async function renameFlavor(i,v) { 
-  if(v.trim()) { 
-    state.flavors[i].name=v.trim(); 
-    renderAll();
-    await persist(); 
-  } 
+async function renameFlavor(i,v) {
+  if(v.trim()) { state.flavors[i].name = v.trim(); renderAll(); await persist(); }
 }
-async function restockFlavor(i) { 
-  state.flavors[i].stock += cfg.batch; 
-  renderAll();
-  await persist(); 
-  toast('Dodano dostawę!'); 
+async function restockFlavor(i) {
+  state.flavors[i].stock += cfg.batch;
+  renderAll(); await persist(); toast('📦 Dostawa dodana!');
 }
-async function adjustStock(i,d) { 
-  state.flavors[i].stock = Math.max(0, state.flavors[i].stock + d); 
-  renderAll();
-  await persist(); 
+async function adjustStock(i,d) {
+  state.flavors[i].stock = Math.max(0, state.flavors[i].stock + d);
+  renderAll(); await persist();
 }
-
 async function saveSettings() {
   cfg.cost = parseFloat(document.getElementById('s-cost').value)||26;
   cfg.price = parseFloat(document.getElementById('s-price').value)||60;
   cfg.batch = parseInt(document.getElementById('s-batch').value)||100;
   cfg.alert = parseInt(document.getElementById('s-alert').value)||10;
-  renderAll();
-  await persist(); 
-  toast('Ustawienia zapisane');
+  renderAll(); await persist(); toast('✓ Ustawienia zapisane');
 }
-
 async function addFlavor() {
   const n = document.getElementById('new-flavor-input').value.trim();
   if(!n) return;
   state.flavors.push({id:'f'+Date.now(),name:n,stock:0});
   document.getElementById('new-flavor-input').value='';
-  renderAll();
-  await persist(); 
-  toast('Smak dodany');
+  renderAll(); await persist(); toast('✓ Smak dodany');
 }
 
 function exportCsv() {
@@ -828,35 +1995,36 @@ function exportCsv() {
     const d = new Date(s.ts).toLocaleString('pl-PL');
     lines.push(`"${d}","${s.buyer||'Anonimowy'}","${s.flavorName}",${s.qty},${s.qty*cfg.price},${s.qty*P()}`);
   }
-  const csvContent = '\uFEFF' + lines.join('\n');
-  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const blob = new Blob(['\uFEFF' + lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
   const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.setAttribute("href", url); link.setAttribute("download", `wiflux_data.csv`);
-  document.body.appendChild(link); link.click(); document.body.removeChild(link);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'wiflux_export.csv';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  toast('✓ Eksport CSV gotowy');
 }
 
 async function resetAll() {
-  if(!confirm('Zresetować dane?')) return;
-  state={flavors:DEF_FLAVORS(),sales:[],buyers:[...DEF_BUYERS],orders:[]};
-  renderAll();
-  await persist(); 
+  if(!confirm('Zresetować wszystkie dane? Tej operacji nie można cofnąć.')) return;
+  state = { flavors: DEF_FLAVORS(), sales: [], buyers: [...DEF_BUYERS], orders: [] };
+  renderAll(); await persist(); toast('↺ Dane zresetowane');
 }
 
 function showPage(id) {
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.nav').forEach(n=>n.classList.remove('active'));
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav').forEach(n => n.classList.remove('active'));
   document.getElementById('page-'+id)?.classList.add('active');
   document.getElementById('nav-'+id)?.classList.add('active');
-  document.getElementById('sale-bar').style.display = id==='dodaj' ? 'flex' : 'none';
+  document.getElementById('sale-bar').style.display = id === 'dodaj' ? 'flex' : 'none';
   if(id==='historia') renderHistory();
   if(id==='zamowienia') renderOrdersPage();
   if(id==='magazyn') renderMagazyn();
 }
 
 function toast(msg) {
-  const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),2000);
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
 }
 
 init();
