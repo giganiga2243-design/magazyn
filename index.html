@@ -6,63 +6,80 @@
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
-  --bg: #0B0B0E;
-  --surface: #121216;
-  --surface2: #1A1A22;
-  --surface3: #242430;
-  --border: rgba(255,255,255,0.06);
-  --border2: rgba(255,255,255,0.12);
-  --text: #E4E4E7;
+  --bg: #07070a;
+  --surface: #0f0f15;
+  --surface2: #161622;
+  --surface3: #222235;
+  --border: rgba(255, 255, 255, 0.05);
+  --border2: rgba(255, 255, 255, 0.12);
+  --text: #F4F4F5;
   --text2: #A1A1AA;
-  --text3: #71717A;
+  --text3: #52525B;
   --accent: #6366F1;
   --accent-hover: #4F46E5;
   --green: #10B981;
-  --green-bg: rgba(16, 185, 129, 0.1);
+  --green-bg: rgba(16, 185, 129, 0.08);
   --green-text: #34D399;
   --amber: #F59E0B;
-  --amber-bg: rgba(245, 158, 11, 0.1);
+  --amber-bg: rgba(245, 158, 11, 0.08);
   --amber-text: #FBBF24;
   --red: #EF4444;
-  --red-bg: rgba(239, 68, 68, 0.1);
+  --red-bg: rgba(239, 68, 68, 0.08);
   --red-text: #F87171;
-  --r: 12px;
-  --r-sm: 8px;
+  --r: 14px;
+  --r-sm: 10px;
   --r-xs: 6px;
 }
 html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(--text); }
 body { font-family: 'Segoe UI', -apple-system, system-ui, sans-serif; font-size: 14px; line-height: 1.5; display: flex; flex-direction: column; position: relative; }
 
 /* TŁO SPADAJĄCYCH GWIAZD */
-#bg-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; opacity: 0.6; }
+#bg-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; opacity: 0.5; }
 
 /* EKRAN LOGOWANIA */
 .login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); display: flex; align-items: center; justify-content: center; z-index: 9999; }
-.login-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 32px; width: 100%; max-width: 360px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); position: relative; z-index: 2; }
+.login-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 32px; width: 100%; max-width: 360px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.7); position: relative; z-index: 2; }
 
 .topbar { height: 56px; background: var(--surface); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 24px; flex-shrink: 0; position: relative; z-index: 2; }
 .brand { display: flex; align-items: center; gap: 10px; }
-.brand-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--green); box-shadow: 0 0 8px var(--green); }
+.brand-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--green); box-shadow: 0 0 10px var(--green); }
 .brand-name { font-size: 15px; font-weight: 600; letter-spacing: -0.01em; }
 .brand-sub { font-size: 12px; color: var(--text3); margin-left: 2px; }
 
 .shell { display: flex; flex: 1; overflow: hidden; position: relative; z-index: 2; }
-.sidebar { width: 196px; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 12px 8px; gap: 2px; flex-shrink: 0; }
-.nav { padding: 9px 12px; border-radius: var(--r-sm); cursor: pointer; font-size: 13px; color: var(--text2); display: flex; align-items: center; gap: 9px; border: none; background: none; width: 100%; text-align: left; transition: all 0.1s; font-family: inherit; }
-.nav:hover { background: var(--surface2); color: var(--text); }
-.nav.active { background: var(--accent); color: #fff; box-shadow: 0 0 12px rgba(99, 102, 241, 0.4); }
-.nav-sep { height: 1px; background: var(--border); margin: 6px 4px; }
 
-.wrap { display: flex; flex-direction: column; flex: 1; overflow: hidden; background: rgba(11, 11, 14, 0.6); backdrop-filter: blur(4px); }
+/* ANIMOWANE NOWOCZESNE MENU BOCZNE */
+.sidebar { width: 220px; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 16px 10px; gap: 6px; flex-shrink: 0; justify-content: space-between; transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+.sidebar-menu { display: flex; flex-direction: column; gap: 5px; }
+.nav { padding: 11px 14px; border-radius: var(--r-sm); cursor: pointer; font-size: 13.5px; font-weight: 500; color: var(--text2); display: flex; align-items: center; gap: 12px; border: none; background: transparent; width: 100%; text-align: left; position: relative; overflow: hidden; transition: color 0.2s, background-color 0.2s, transform 0.2s; font-family: inherit; }
+.nav:hover { background: var(--surface2); color: var(--text); transform: translateX(4px); }
+.nav::before { content: ''; position: absolute; left: 0; top: 15%; height: 70%; width: 3px; background: var(--accent); border-radius: 0 4px 4px 0; opacity: 0; transition: opacity 0.2s; }
+.nav:hover::before { opacity: 0.5; }
+.nav.active { background: linear-gradient(90deg, rgba(99, 102, 241, 0.15) 0%, rgba(99, 102, 241, 0.02) 100%); color: #A5B4FC; border: 1px solid rgba(99, 102, 241, 0.2); transform: translateX(4px); font-weight: 600; }
+.nav.active::before { opacity: 1; height: 50%; top: 25%; }
+.nav-sep { height: 1px; background: var(--border); margin: 8px 6px; }
+.nav-icon { font-size: 16px; width: 20px; text-align: center; display: inline-block; }
+
+/* PANEL ODTWARZACZA MUZYKI W MENU */
+.music-player-panel { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--r-sm); padding: 12px; display: flex; flex-direction: column; gap: 8px; margin-top: auto; }
+.player-header { font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text3); display: flex; justify-content: space-between; align-items: center; font-weight: bold; }
+.player-container { width: 100%; height: 80px; background: #000; border-radius: var(--r-xs); overflow: hidden; position: relative; border: 1px solid rgba(255,255,255,0.02); }
+.player-container iframe { width: 100%; height: 100%; border: none; position: absolute; top:0; left:0; }
+.player-input-box { display: flex; flex-direction: column; gap: 6px; }
+.player-input-box input { font-size: 11px; padding: 6px 8px; width: 100%; background: var(--surface3); }
+
+.wrap { display: flex; flex-direction: column; flex: 1; overflow: hidden; background: rgba(7, 7, 10, 0.4); backdrop-filter: blur(8px); }
 .content { flex: 1; overflow-y: auto; padding: 22px 24px; }
 .page { display: none; }
-.page.active { display: block; }
+.page.active { display: block; animation: fadeIn 0.25s ease-out; }
 
-.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 18px 20px; margin-bottom: 14px; box-shadow: 0 4px 6px rgba(0,0,0,0.15); }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 18px 20px; margin-bottom: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
 .card-hd { font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text3); margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; }
 
 .metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 18px; }
-.metric { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 16px 18px; box-shadow: 0 4px 6px rgba(0,0,0,0.15); }
+.metric { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 16px 18px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
 .metric-lbl { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 5px; }
 .metric-val { font-size: 26px; font-weight: 700; letter-spacing: -0.02em; }
 .metric-val.g { color: var(--green-text); }
@@ -70,21 +87,21 @@ body { font-family: 'Segoe UI', -apple-system, system-ui, sans-serif; font-size:
 .btn { font-family: inherit; font-size: 13px; padding: 8px 16px; border-radius: var(--r-xs); border: 1px solid var(--border2); background: var(--surface2); color: var(--text); cursor: pointer; transition: all 0.12s; white-space: nowrap; }
 .btn:hover { background: var(--surface3); border-color: var(--text3); }
 .btn:active { transform: scale(0.98); }
-.btn-p { background: var(--accent) !important; color: #fff !important; border-color: transparent !important; }
-.btn-p:hover { background: var(--accent-hover) !important; }
+.btn-p { background: var(--accent) !important; color: #fff !important; border-color: transparent !important; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2); }
+.btn-p:hover { background: var(--accent-hover) !important; box-shadow: 0 6px 16px rgba(99, 102, 241, 0.3); }
 .btn-sm { padding: 5px 11px; font-size: 12px; }
 .btn-d { border-color: var(--red) !important; color: var(--red-text) !important; background: var(--red-bg) !important; }
-.btn-d:hover { background: rgba(239, 68, 68, 0.2) !important; }
+.btn-d:hover { background: rgba(239, 68, 68, 0.15) !important; }
 .btn-g { border-color: var(--green) !important; color: var(--green-text) !important; background: var(--green-bg) !important; }
-.btn-g:hover { background: rgba(16, 185, 129, 0.2) !important; }
+.btn-g:hover { background: rgba(16, 185, 129, 0.15) !important; }
 
 input, select { font-family: inherit; font-size: 13px; padding: 9px 12px; border: 1px solid var(--border2); border-radius: var(--r-xs); background: var(--surface2); color: var(--text); outline: none; transition: all 0.1s; }
-input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2); background: var(--surface3); }
+input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15); background: var(--surface3); }
 
 .flavor-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(172px, 1fr)); gap: 8px; }
-.fc { border: 1.5px solid var(--border); border-radius: var(--r-sm); padding: 11px 13px; cursor: pointer; transition: all 0.13s; background: var(--surface); position: relative; user-select: none; }
-.fc:hover:not(.fc-out) { border-color: var(--text3); background: var(--surface2); transform: translateY(-1px); }
-.fc.fc-sel { border-color: var(--accent); background: var(--accent); }
+.fc { border: 1.5px solid var(--border); border-radius: var(--r-sm); padding: 11px 13px; cursor: pointer; transition: all 0.15s; background: var(--surface); position: relative; user-select: none; }
+.fc:hover:not(.fc-out) { border-color: var(--text2); background: var(--surface2); transform: translateY(-2px); }
+.fc.fc-sel { border-color: var(--accent); background: linear-gradient(145deg, var(--accent) 0%, #4F46E5 100%); box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25); }
 .fc.fc-out { opacity: 0.25; cursor: not-allowed; }
 .fc-check { position: absolute; top: 8px; right: 9px; width: 17px; height: 17px; border-radius: 50%; background: rgba(255,255,255,0.2); display: none; align-items: center; justify-content: center; font-size: 9px; color: #fff; }
 .fc.fc-sel .fc-check { display: flex; }
@@ -99,7 +116,7 @@ input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px r
 .chips { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
 .chip { padding: 6px 14px; border-radius: 20px; border: 1px solid var(--border2); font-size: 12px; cursor: pointer; background: var(--surface2); color: var(--text2); transition: all 0.1s; }
 .chip:hover { background: var(--surface3); color: var(--text); }
-.chip.chip-sel { background: var(--accent); color: #fff; border-color: transparent; }
+.chip.chip-sel { background: var(--accent); color: #fff; border-color: transparent; box-shadow: 0 4px 10px rgba(99, 102, 241, 0.2); }
 .chip-add { border-style: dashed; color: var(--text3); }
 
 .new-buyer { display: none; margin-top: 8px; gap: 8px; align-items: center; }
@@ -143,7 +160,6 @@ input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px r
 .toast { position: fixed; bottom: 80px; right: 24px; background: var(--accent); color: #fff; padding: 11px 20px; border-radius: var(--r-sm); font-size: 13px; opacity: 0; transition: opacity 0.18s; pointer-events: none; z-index: 999; box-shadow: 0 4px 12px rgba(99,102,241,0.3); }
 .toast.show { opacity: 1; }
 
-/* REZERWACJE / ZAMÓWIENIA STYL */
 .order-box { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
 .order-item { display: flex; align-items: center; gap: 12px; background: var(--surface2); padding: 12px 14px; border-radius: var(--r-sm); border: 1px solid var(--border); }
 .order-status { font-size: 11px; font-weight: 600; text-transform: uppercase; padding: 2px 6px; border-radius: 4px; }
@@ -173,20 +189,36 @@ input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px r
   <div class="brand">
     <div class="brand-dot"></div>
     <span class="brand-name">Wiflux</span>
-    <span class="brand-sub">· System Live Matrix v4</span>
+    <span class="brand-sub">· System Live Matrix v5</span>
   </div>
   <button class="btn btn-sm" onclick="exportCsv()">↓ Eksport CSV</button>
 </div>
 
 <div class="shell">
   <div class="sidebar">
-    <button class="nav active" id="nav-pulpit" onclick="showPage('pulpit')">▦ &nbsp;Pulpit</button>
-    <button class="nav" id="nav-dodaj" onclick="showPage('dodaj')">＋ &nbsp;Sprzedaj / Zarezerwuj</button>
-    <button class="nav" id="nav-zamowienia" onclick="showPage('zamowienia')">⏳ &nbsp;Zamówienia (<span id="nav-order-count">0</span>)</button>
-    <button class="nav" id="nav-historia" onclick="showPage('historia')">≡ &nbsp;Historia</button>
-    <div class="nav-sep"></div>
-    <button class="nav" id="nav-magazyn" onclick="showPage('magazyn')">□ &nbsp;Magazyn</button>
-    <button class="nav" id="nav-ustawienia" onclick="showPage('ustawienia')">⚙ &nbsp;Ustawienia</button>
+    <div class="sidebar-menu">
+      <button class="nav active" id="nav-pulpit" onclick="showPage('pulpit')"><span class="nav-icon">▦</span> Pulpit</button>
+      <button class="nav" id="nav-dodaj" onclick="showPage('dodaj')"><span class="nav-icon">＋</span> Nowa akcja</button>
+      <button class="nav" id="nav-zamowienia" onclick="showPage('zamowienia')"><span class="nav-icon">⏳</span> Zamówienia (<span id="nav-order-count">0</span>)</button>
+      <button class="nav" id="nav-historia" onclick="showPage('historia')"><span class="nav-icon">≡</span> Historia</button>
+      <div class="nav-sep"></div>
+      <button class="nav" id="nav-magazyn" onclick="showPage('magazyn')"><span class="nav-icon">□</span> Magazyn</button>
+      <button class="nav" id="nav-ustawienia" onclick="showPage('ustawienia')"><span class="nav-icon">⚙</span> Ustawienia</button>
+    </div>
+
+    <div class="music-player-panel">
+      <div class="player-header">
+        <span>🎵 Muzyka w tle</span>
+        <span style="font-size:8px; color: var(--green-text);">ONLINE</span>
+      </div>
+      <div class="player-container">
+        <div id="player-placeholder" style="color:var(--text3); font-size:11px; text-align:center; padding-top:24px; font-weight:500;">Brak playlisty</div>
+        <iframe id="music-iframe" src="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+      </div>
+      <div class="player-input-box">
+        <input type="text" id="playlist-url-input" placeholder="Wklej link YouTube / Spotify..." onchange="loadCustomPlaylist(this.value)" />
+      </div>
+    </div>
   </div>
 
   <div class="wrap">
@@ -322,7 +354,7 @@ const DEF_BUYERS = ['Anonimowy'];
 
 let state = { flavors: DEF_FLAVORS(), sales: [], buyers: [...DEF_BUYERS], orders: [] };
 let cfg = { ...DEF_SETTINGS };
-let selF = null, selB = null, qty = 1, txType = 'sale'; // 'sale' lub 'order'
+let selF = null, selB = null, qty = 1, txType = 'sale';
 let isSaving = false;
 
 // --- SILNIK SPADAJĄCYCH GWIAZD ---
@@ -340,8 +372,8 @@ class Star {
     this.x = Math.random() * canvas.width;
     this.y = -10;
     this.length = Math.random() * 80 + 20;
-    this.speed = Math.random() * 3 + 1;
-    this.alpha = Math.random() * 0.4 + 0.1;
+    this.speed = Math.random() * 2.5 + 0.8;
+    this.alpha = Math.random() * 0.35 + 0.05;
   }
   update() {
     this.y += this.speed;
@@ -353,20 +385,62 @@ class Star {
     gradient.addColorStop(0, `rgba(99, 102, 241, 0)`);
     gradient.addColorStop(1, `rgba(16, 185, 129, ${this.alpha})`);
     ctx.strokeStyle = gradient;
-    ctx.lineWidth = 1.5;
+    ctx.lineWidth = 1.2;
     ctx.moveTo(this.x, this.y);
     ctx.lineTo(this.x, this.y + this.length);
     ctx.stroke();
   }
 }
 
-for(let i=0; i<45; i++) { stars.push(new Star()); }
+for(let i=0; i<40; i++) { stars.push(new Star()); }
 function animateBackground() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   stars.forEach(s => { s.update(); s.draw(); });
   requestAnimationFrame(animateBackground);
 }
 animateBackground();
+
+// --- LOGIKA PLAYERA MUZYCZNEGO ---
+function loadCustomPlaylist(url) {
+  if(!url) return;
+  const iframe = document.getElementById('music-iframe');
+  const placeholder = document.getElementById('player-placeholder');
+  
+  let embedUrl = "";
+  
+  if (url.includes("spotify.com")) {
+    // Przebudowa linku dla Spotify Embed
+    embedUrl = url.replace("open.spotify.com/", "open.spotify.com/embed/");
+  } else if (url.includes("youtube.com/playlist") || url.includes("music.youtube.com/playlist")) {
+    // Wyciąganie ID playlisty z YouTube
+    const urlParams = new URLSearchParams(new URL(url).search);
+    const listId = urlParams.get('list');
+    if(listId) {
+      embedUrl = `https://www.youtube.com/embed/videoseries?list=${listId}`;
+    }
+  } else if (url.includes("youtu.be") || url.includes("youtube.com/watch")) {
+    // Jeśli użytkownik poda pojedynczy film zamiast playlisty
+    let videoId = "";
+    if(url.includes("youtu.be")) {
+      videoId = url.split("/").pop().split("?")[0];
+    } else {
+      const urlParams = new URLSearchParams(new URL(url).search);
+      videoId = urlParams.get('v');
+    }
+    if(videoId) {
+      embedUrl = `https://www.youtube.com/embed/${videoId}`;
+    }
+  }
+
+  if (embedUrl) {
+    iframe.src = embedUrl;
+    placeholder.style.display = 'none';
+    iframe.style.display = 'block';
+    localStorage.setItem('wiflux_playlist', url);
+  } else {
+    toast("❌ Nieprawidłowy lub nieobsługiwany link!");
+  }
+}
 
 // --- LOGOWANIE ---
 function checkLogin() {
@@ -382,6 +456,14 @@ function checkLogin() {
 
 async function init() {
   if(localStorage.getItem('wiflux_logged') === 'true') { document.getElementById('login-screen').style.display = 'none'; }
+  
+  // Wczytaj zapisaną playlistę z pamięci przeglądarki
+  const savedPlaylist = localStorage.getItem('wiflux_playlist');
+  if(savedPlaylist) {
+    document.getElementById('playlist-url-input').value = savedPlaylist;
+    loadCustomPlaylist(savedPlaylist);
+  }
+
   toast('Wczytywanie bazy Matrix...');
   await syncData();
   document.getElementById('s-cost').value = cfg.cost;
@@ -490,13 +572,13 @@ function renderOrdersPage() {
           <div class="si-det">${o.flavorName} — <strong>${o.qty} szt.</strong></div>
           <div style="font-size:11px; color:var(--text3); margin-top:2px;">Złożone: ${fmtD(o.ts)}</div>
         </div>
-        <button class="btn btn-sm btn-g" onclick="completeOrder('${o.id}')">Kupujący odbiera (Zrealizuj)</button>
+        <button class="btn btn-sm btn-g" onclick="completeOrder('${o.id}')">Zrealizuj</button>
         <button class="btn btn-sm btn-d" onclick="deleteOrder('${o.id}')">✕ Anuluj</button>
       </div>`).join('')
     : '<div class="empty">Brak zamówień oczekujących na wydanie.</div>';
 
   document.getElementById('order-list-completed').innerHTML = completed.length
-    ? completed.map(o => `<div class="order-item" style="opacity:0.7;">
+    ? completed.map(o => `<div class="order-item" style="opacity:0.6;">
         <div class="si-info">
           <div class="si-who">${o.buyer} <span class="order-status status-done">Zrealizowane</span></div>
           <div class="si-det">${o.flavorName} — ${o.qty} szt.</div>
@@ -512,23 +594,20 @@ async function completeOrder(id) {
   const o = state.orders[idx];
   
   const f = state.flavors.find(x => x.id === o.flavorId);
-  if (!f || f.stock < o.qty) { toast('❌ Brak towaru w magazynie na realizację!'); return; }
+  if (!f || f.stock < o.qty) { toast('❌ Brak towaru na magazynie!'); return; }
   
-  // Odejmij z magazynu i dodaj do oficjalnej historii sprzedaży
   f.stock -= o.qty;
   state.sales.push({ flavorId: o.flavorId, flavorName: o.flavorName, buyer: o.buyer, qty: o.qty, ts: Date.now() });
-  
   o.status = 'completed';
   o.completedTs = Date.now();
   
-  toast('Realizacja...');
   await persist();
   renderAll();
-  toast('✓ Zamówienie zrealizowane i wydane!');
+  toast('✓ Zamówienie wydane i zrealizowane!');
 }
 
 async function deleteOrder(id) {
-  if(!confirm('Anulować to zamówienie?')) return;
+  if(!confirm('Anulować zamówienie?')) return;
   state.orders = state.orders.filter(o => o.id !== id);
   await persist();
   renderAll();
@@ -541,7 +620,7 @@ function renderFlavorGrid() {
     return `<div class="fc${sel?' fc-sel':''}${f.stock===0?' fc-out':''}" onclick="selectF('${f.id}')">
       <div class="fc-check">✓</div>
       <div class="fc-name">${f.name}</div>
-      <div class="fc-qty">${f.stock} szt. na magazynie</div>
+      <div class="fc-qty">${f.stock} szt. w bazie</div>
       <div class="fc-bar"><div class="fc-fill" style="width:${pct}%;background:${sel?'#fff':barColor(f.stock)};"></div></div>
     </div>`;
   }).join('');
@@ -559,15 +638,14 @@ function updateSaleBar() {
   document.getElementById('sb-btn').disabled = !ready;
   document.getElementById('qty-display').textContent = qty;
   
-  const btn = document.getElementById('sb-btn');
-  btn.textContent = txType === 'sale' ? 'Zarejestruj Sprzedaż →' : 'Zarezerwuj Zamówienie →';
+  document.getElementById('sb-btn').textContent = txType === 'sale' ? 'Zarejestruj Sprzedaż →' : 'Zarezerwuj Zamówienie →';
 
   const prev = document.getElementById('sale-preview');
   if (f && selB) {
     document.getElementById('sb-title').textContent = selB + ' · ' + f.name;
     document.getElementById('sb-sub').textContent = qty + ' szt. × ' + cfg.price + ' zł (' + (txType === 'sale' ? 'Natychmiastowe' : 'Oczekujące') + ')';
     document.getElementById('sb-price').textContent = '+' + fmt(qty * P());
-    if(prev) prev.textContent = 'Obrót: ' + fmt(qty*cfg.price) + '  ·  Przyszły zysk: ' + fmt(qty*P());
+    if(prev) prev.textContent = 'Obrót: ' + fmt(qty*cfg.price) + '  ·  Zysk: ' + fmt(qty*P());
   } else {
     document.getElementById('sb-title').textContent = !selB ? 'Wybierz klienta' : 'Wybierz smak';
     document.getElementById('sb-sub').textContent = '';
@@ -596,16 +674,12 @@ async function handleSubmit() {
   if (!f) return;
 
   if (txType === 'sale') {
-    // Bezpośrednia sprzedaż
-    if (f.stock < qty) { toast('❌ Za mało sztuk w magazynie!'); return; }
+    if (f.stock < qty) { toast('❌ Za mało towaru!'); return; }
     f.stock -= qty;
     state.sales.push({ flavorId: selF, flavorName: f.name, buyer: selB, qty, ts: Date.now() });
-    toast('Zapisywanie sprzedaży...');
   } else {
-    // Zamówienie (rezerwacja do zrealizowania)
     if(!state.orders) state.orders = [];
     state.orders.push({ id: 'o' + Date.now(), flavorId: selF, flavorName: f.name, buyer: selB, qty, ts: Date.now(), status: 'pending' });
-    toast('Zapisywanie rezerwacji...');
   }
 
   selF = null; qty = 1;
@@ -629,7 +703,7 @@ function renderHistory() {
 }
 
 async function deleteSale(idx) {
-  if (!confirm('Usunąć tę sprzedaż z historii? Towar wróci na magazyn.')) return;
+  if (!confirm('Usunąć pozycję z historii? Towar wróci na stan.')) return;
   const s = state.sales[idx];
   const f = state.flavors.find(x=>x.id===s.flavorId);
   if(f) f.stock += s.qty;
