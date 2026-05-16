@@ -33,12 +33,27 @@
 html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(--text); }
 body { font-family: 'Segoe UI', -apple-system, system-ui, sans-serif; font-size: 14px; line-height: 1.5; display: flex; flex-direction: column; position: relative; }
 
-/* TŁO SPADAJĄCYCH GWIAZD */
-#bg-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; opacity: 0.6; }
+/* TŁO SPADAJĄCYCH GWIAZD & NEBULI */
+#bg-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; opacity: 0.7; }
 
 /* EKRAN LOGOWANIA */
-.login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); display: flex; align-items: center; justify-content: center; z-index: 9999; }
-.login-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 32px; width: 100%; max-width: 360px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); position: relative; z-index: 2; }
+.login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); display: flex; align-items: center; justify-content: center; z-index: 9999; transition: opacity 0.5s ease; }
+.login-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 32px; width: 100%; max-width: 360px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); position: relative; z-index: 2; animation: fadeIn 0.6s ease; }
+
+/* EKRAN POWITALNY */
+.welcome-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 11, 14, 0.95); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9998; opacity: 0; pointer-events: none; transition: opacity 0.6s ease; backdrop-filter: blur(8px); }
+.welcome-screen.show { opacity: 1; pointer-events: auto; }
+.welcome-box { text-align: center; animation: scaleUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
+.welcome-title { font-size: 32px; font-weight: 700; margin-bottom: 10px; background: linear-gradient(45deg, #6366F1, #10B981); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.welcome-subtitle { font-size: 16px; color: var(--text2); margin-bottom: 24px; }
+
+/* ODTWARZACZ MUZYKI */
+.audio-player { display: flex; align-items: center; gap: 8px; background: var(--surface2); border: 1px solid var(--border); padding: 6px 12px; border-radius: 20px; font-size: 12px; color: var(--text2); }
+.audio-player button { background: none; border: none; color: var(--accent); cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; transition: transform 0.1s; }
+.audio-player button:hover { transform: scale(1.1); color: var(--green-text); }
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes scaleUp { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
 .topbar { height: 56px; background: var(--surface); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 24px; flex-shrink: 0; position: relative; z-index: 2; }
 .brand { display: flex; align-items: center; gap: 10px; }
@@ -143,7 +158,6 @@ input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px r
 .toast { position: fixed; bottom: 80px; right: 24px; background: var(--accent); color: #fff; padding: 11px 20px; border-radius: var(--r-sm); font-size: 13px; opacity: 0; transition: opacity 0.18s; pointer-events: none; z-index: 999; box-shadow: 0 4px 12px rgba(99,102,241,0.3); }
 .toast.show { opacity: 1; }
 
-/* REZERWACJE / ZAMÓWIENIA STYL */
 .order-box { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
 .order-item { display: flex; align-items: center; gap: 12px; background: var(--surface2); padding: 12px 14px; border-radius: var(--r-sm); border: 1px solid var(--border); }
 .order-status { font-size: 11px; font-weight: 600; text-transform: uppercase; padding: 2px 6px; border-radius: 4px; }
@@ -153,7 +167,7 @@ input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px r
 </head>
 <body>
 
-<audio id="bg-music" loop></audio>
+<audio id="bg-music" loop src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"></audio>
 
 <canvas id="bg-canvas"></canvas>
 
@@ -171,13 +185,29 @@ input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px r
   </div>
 </div>
 
+<div class="welcome-screen" id="welcome-screen">
+  <div class="welcome-box">
+    <div class="welcome-title" id="welcome-user-text">Witaj!</div>
+    <div class="welcome-subtitle">Inicjalizacja systemu Matrix Live...</div>
+    <button class="btn btn-p" style="padding: 12px 32px; font-size: 14px;" onclick="closeWelcomeScreen()">Wejdź do panelu</button>
+  </div>
+</div>
+
 <div class="topbar">
   <div class="brand">
     <div class="brand-dot"></div>
     <span class="brand-name">Wiflux</span>
-    <span class="brand-sub">· System Live Matrix v4</span>
+    <span class="brand-sub" id="user-session-badge">· System Live Matrix v4</span>
   </div>
-  <button class="btn btn-sm" onclick="exportCsv()">↓ Eksport CSV</button>
+  <div style="display: flex; align-items: center; gap: 12px;">
+    <div class="audio-player">
+      <button id="music-btn" onclick="toggleMusic()">▶</button>
+      <span id="music-status">Muzyka wyłączona</span>
+      <button onclick="document.getElementById('music-upload').click()" title="Wgraj własny plik muzyczny" style="font-size: 12px; margin-left: 4px;">📁</button>
+      <input type="file" id="music-upload" accept="audio/*" style="display: none;" onchange="handleMusicUpload(this)" />
+    </div>
+    <button class="btn btn-sm" onclick="exportCsv()">↓ Eksport CSV</button>
+  </div>
 </div>
 
 <div class="shell">
@@ -195,11 +225,6 @@ input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px r
     <div class="content">
 
       <div class="page active" id="page-pulpit">
-        <div class="card" id="welcome-card" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(16, 185, 129, 0.05)); border-color: rgba(99, 102, 241, 0.25); margin-bottom: 18px; padding: 20px;">
-          <h2 style="font-size: 18px; font-weight: 600; color: #fff; letter-spacing: -0.01em;" id="welcome-text">Inicjalizacja Matrixa...</h2>
-          <p style="font-size: 12.5px; color: var(--text2); margin-top: 4px;">Wszystkie systemy aktywne. Sprzedaż i rezerwacje zsynchronizowane w chmurze.</p>
-        </div>
-
         <div class="metrics">
           <div class="metric"><div class="metric-lbl">Magazyn (Dostępne)</div><div class="metric-val" id="m-stock">—</div></div>
           <div class="metric"><div class="metric-lbl">Zrealizowane</div><div class="metric-val" id="m-sold">—</div></div>
@@ -290,28 +315,6 @@ input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px r
           <div class="set-row"><div><div class="set-lbl">Rozmiar dostawy (szt.)</div><div class="set-desc">Szybkie dodanie przyciskiem zielonym</div></div><input type="number" class="set-inp" id="s-batch" value="100" onchange="saveSettings()" /></div>
           <div class="set-row"><div><div class="set-lbl">Alert niskiego stanu (szt.)</div><div class="set-desc">Oznaczenie "mało" poniżej tej wartości</div></div><input type="number" class="set-inp" id="s-alert" value="10" onchange="saveSettings()" /></div>
         </div>
-
-        <div class="card">
-          <div class="card-hd">Odtwarzacz Muzyki Tła</div>
-          <div class="set-row" style="flex-direction: column; align-items: flex-start; gap: 8px;">
-            <div>
-              <div class="set-lbl">Link bezpośredni do pliku (.mp3)</div>
-              <div class="set-desc">Wklej czysty adres URL (np. z catbox.moe). Muzyka zaktualizuje się u wszystkich na żywo!</div>
-            </div>
-            <input type="text" id="s-music-url" style="width: 100%; max-width: 500px;" placeholder="https://files.catbox.moe/xxxxxx.mp3" onchange="saveSettings()" />
-          </div>
-          <div class="set-row">
-            <div>
-              <div class="set-lbl">Głośność muzyki</div>
-              <div class="set-desc">Ustaw optymalną głośność tła</div>
-            </div>
-            <div style="display: flex; align-items: center; gap: 10px;">
-              <input type="range" id="s-music-volume" min="0" max="1" step="0.05" value="0.3" style="width: 120px; accent-color: var(--accent);" oninput="handleVolumeChange(this.value)" onchange="saveSettings()" />
-              <span id="volume-pct" style="font-size: 12px; color: var(--text2); min-width: 32px; text-align: right;">30%</span>
-            </div>
-          </div>
-        </div>
-
         <div class="card">
           <div class="card-hd">Zarządzanie bazą</div>
           <div class="set-row"><div><div class="set-lbl">Resetuj dane</div><div class="set-desc">Czyści historię i przywraca stan początkowy</div></div><button class="btn btn-sm btn-d" onclick="resetAll()">Resetuj</button></div>
@@ -345,7 +348,7 @@ const INITIAL_STOCKS = {
 };
 
 const ALL_FLAVORS = Object.keys(INITIAL_STOCKS);
-const DEF_SETTINGS = { cost: 26, price: 60, batch: 100, alert: 10, musicUrl: '', musicVolume: 0.3 };
+const DEF_SETTINGS = { cost: 26, price: 60, batch: 100, alert: 10 };
 const DEF_FLAVORS = () => ALL_FLAVORS.map((name, i) => ({ id: 'f' + i, name, stock: INITIAL_STOCKS[name] || 0 }));
 const DEF_BUYERS = ['Anonimowy'];
 
@@ -354,10 +357,11 @@ let cfg = { ...DEF_SETTINGS };
 let selF = null, selB = null, qty = 1, txType = 'sale';
 let isSaving = false;
 
-// --- SILNIK SPADAJĄCYCH GWIAZD ---
+// --- DYNAMICZNE, ANIMOWANE TŁO (GWIAZDY + MGŁAWICA + NEBULA) ---
 const canvas = document.getElementById('bg-canvas');
 const ctx = canvas.getContext('2d');
 let stars = [];
+let nebulae = [];
 
 function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
 window.addEventListener('resize', resizeCanvas);
@@ -369,8 +373,8 @@ class Star {
     this.x = Math.random() * canvas.width;
     this.y = -10;
     this.length = Math.random() * 80 + 20;
-    this.speed = Math.random() * 2.5 + 1.5; // Zoptymalizowana prędkość
-    this.alpha = Math.random() * 0.4 + 0.15;
+    this.speed = Math.random() * 3 + 1;
+    this.alpha = Math.random() * 0.4 + 0.1;
   }
   update() {
     this.y += this.speed;
@@ -389,34 +393,98 @@ class Star {
   }
 }
 
-for(let i=0; i<40; i++) { stars.push(new Star()); }
+class Nebula {
+  constructor() {
+    this.x = Math.random() * canvas.width;
+    this.y = Math.random() * canvas.height;
+    this.r = Math.random() * 150 + 100;
+    this.dx = (Math.random() - 0.5) * 0.3;
+    this.dy = (Math.random() - 0.5) * 0.3;
+    this.color = Math.random() > 0.5 ? 'rgba(99, 102, 241, 0.04)' : 'rgba(16, 185, 129, 0.03)';
+  }
+  update() {
+    this.x += this.dx;
+    this.y += this.dy;
+    if(this.x < -this.r || this.x > canvas.width + this.r) this.dx *= -1;
+    if(this.y < -this.r || this.y > canvas.height + this.r) this.dy *= -1;
+  }
+  draw() {
+    ctx.beginPath();
+    let g = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.r);
+    g.addColorStop(0, this.color);
+    g.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = g;
+    ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+    ctx.fill();
+  }
+}
+
+for(let i=0; i<45; i++) { stars.push(new Star()); }
+for(let i=0; i<5; i++) { nebulae.push(new Nebula()); }
+
 function animateBackground() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = 'rgba(11, 11, 14, 0.2)';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  nebulae.forEach(n => { n.update(); n.draw(); });
   stars.forEach(s => { s.update(); s.draw(); });
   requestAnimationFrame(animateBackground);
 }
 animateBackground();
 
-// --- LOSOWE POWITANIA SZYMKA I KUBY ---
-function triggerWelcomeMessage() {
-  const greetings = [
-    "Siemanko Szymon i Kuba, czas rozkręcić ten live! 🚀",
-    "Wiflux Matrix aktywowany. Powodzenia w sprzedaży panowie! 👑",
-    "Kuba, Szymon – stan magazynu zsynchronizowany, można działać! 🔥",
-    "Witamy w panelu dowodzenia Wiflux! Elita znowu w komplecie. ⚡",
-    "Systemy stabilne. Szymek, Kuba – czas zarobić trochę grosza! 💰"
-  ];
-  const randomGreeting = greetings[Math.floor(Math.random() * greetings.length)];
-  document.getElementById('welcome-text').textContent = randomGreeting;
+// --- SYSTEM AUDIO ---
+const music = document.getElementById('bg-music');
+const musicBtn = document.getElementById('music-btn');
+const musicStatus = document.getElementById('music-status');
+let currentTrackName = "Lofi cyka blyat";
+
+function toggleMusic() {
+  if (music.paused) {
+    playMusic();
+  } else {
+    pauseMusic();
+  }
 }
 
-// --- LOGOWANIE ---
+function playMusic() {
+  music.play().then(() => {
+    musicBtn.textContent = '⏸';
+    musicStatus.textContent = `${currentTrackName} (ON)`;
+  }).catch(e => console.log("Audio block: " + e));
+}
+
+function pauseMusic() {
+  music.pause();
+  musicBtn.textContent = '▶';
+  musicStatus.textContent = 'Muzyka wyłączona';
+}
+
+function handleMusicUpload(input) {
+  const file = input.files[0];
+  if (file) {
+    const objectURL = URL.createObjectURL(file);
+    music.src = objectURL;
+    currentTrackName = file.name.length > 20 ? file.name.substring(0, 17) + "..." : file.name;
+    playMusic();
+    toast('🎵 Załadowano własny utwór!');
+  }
+}
+
+// --- LOGOWANIE DWUPOZIOMOWE ---
 function checkLogin() {
-  if(document.getElementById('login-password').value === 'szymek123') {
+  const pass = document.getElementById('login-password').value;
+  let user = "";
+
+  if(pass === 'szymek123') {
+    user = "szymon";
+  } else if(pass === 'kubuu22') {
+    user = "kuba";
+  }
+
+  if(user !== "") {
     localStorage.setItem('wiflux_logged', 'true');
+    localStorage.setItem('wiflux_user', user);
     document.getElementById('login-screen').style.display = 'none';
-    triggerWelcomeMessage();
-    startMusic();
+    triggerWelcome(user);
   } else {
     const err = document.getElementById('login-error');
     err.style.display = 'block';
@@ -424,11 +492,28 @@ function checkLogin() {
   }
 }
 
+function triggerWelcome(user) {
+  const nameText = user === 'szymon' ? 'Witaj Szymon! ⚡' : 'Witaj Kuba! 🔥';
+  document.getElementById('welcome-user-text').textContent = nameText;
+  document.getElementById('user-session-badge').textContent = `· Matrix v4 (${user === 'szymon' ? 'Szymon' : 'Kuba'})`;
+  
+  const welcome = document.getElementById('welcome-screen');
+  welcome.classList.add('show');
+  
+  // Automatyczne odpalenie muzyki przy wejściu (jeśli przeglądarka pozwoli)
+  playMusic();
+}
+
+function closeWelcomeScreen() {
+  document.getElementById('welcome-screen').classList.remove('show');
+  playMusic(); // Ponowna próba w razie blokady
+}
+
 async function init() {
   if(localStorage.getItem('wiflux_logged') === 'true') { 
     document.getElementById('login-screen').style.display = 'none'; 
-    triggerWelcomeMessage();
-    startMusic();
+    const savedUser = localStorage.getItem('wiflux_user') || 'User';
+    document.getElementById('user-session-badge').textContent = `· Matrix v4 (${savedUser === 'szymon' ? 'Szymon' : 'Kuba'})`;
   }
   toast('Wczytywanie bazy Matrix...');
   await syncData();
@@ -436,12 +521,6 @@ async function init() {
   document.getElementById('s-price').value = cfg.price;
   document.getElementById('s-batch').value = cfg.batch;
   document.getElementById('s-alert').value = cfg.alert;
-  
-  document.getElementById('s-music-url').value = cfg.musicUrl || '';
-  document.getElementById('s-music-volume').value = cfg.musicVolume !== undefined ? cfg.musicVolume : 0.3;
-  document.getElementById('volume-pct').textContent = Math.round((cfg.musicVolume !== undefined ? cfg.musicVolume : 0.3) * 100) + '%';
-  
-  applyMusicSettings();
   renderAll();
   setInterval(syncData, 4000);
 }
@@ -454,10 +533,7 @@ async function syncData() {
     const d = await res.json();
     if (d && d.state) {
       state = { buyers: [...DEF_BUYERS], orders: [], ...d.state };
-      if (d.settings) {
-        cfg = { ...DEF_SETTINGS, ...d.settings };
-        applyMusicSettings();
-      }
+      if (d.settings) cfg = { ...DEF_SETTINGS, ...d.settings };
       renderAll();
     }
   } catch(e){}
@@ -480,49 +556,6 @@ const P = () => cfg.price - cfg.cost;
 const fmtD = ts => { const d = new Date(ts); return d.toLocaleDateString('pl-PL',{day:'2-digit',month:'2-digit'}) + ' ' + d.toLocaleTimeString('pl-PL',{hour:'2-digit',minute:'2-digit'}); };
 const ini = s => s.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
 const barColor = (stock) => stock === 0 ? '#EF4444' : stock <= cfg.alert ? '#F59E0B' : '#10B981';
-
-// --- SYSTEM AUDIO ---
-function applyMusicSettings() {
-  const audio = document.getElementById('bg-music');
-  if (!audio) return;
-
-  const currentUrl = document.getElementById('s-music-url').value.trim();
-  if (audio.src !== currentUrl && currentUrl) {
-    audio.src = currentUrl;
-    if (localStorage.getItem('wiflux_logged') === 'true') {
-      audio.play().catch(e => console.log("Auto-play blocked by browser. Awaiting interaction."));
-    }
-  } else if (!currentUrl) {
-    audio.removeAttribute('src');
-    audio.pause();
-  }
-
-  const vol = cfg.musicVolume !== undefined ? cfg.musicVolume : 0.3;
-  audio.volume = vol;
-}
-
-function handleVolumeChange(val) {
-  document.getElementById('volume-pct').textContent = Math.round(val * 100) + '%';
-  const audio = document.getElementById('bg-music');
-  if (audio) audio.volume = val;
-}
-
-function startMusic() {
-  setTimeout(() => {
-    const audio = document.getElementById('bg-music');
-    if (audio && audio.src) {
-      audio.play().catch(e => console.log("Odtwarzanie zablokowane. Kliknij cokolwiek na stronie, aby zagrało."));
-    }
-  }, 1000);
-}
-
-document.addEventListener('click', () => {
-  const audio = document.getElementById('bg-music');
-  if (audio && audio.src && audio.paused && localStorage.getItem('wiflux_logged') === 'true') {
-    audio.play().catch(e => {});
-  }
-}, { once: true });
-
 
 function setTxType(type) {
   txType = type;
@@ -757,14 +790,7 @@ function saveSettings() {
   cfg.price = parseFloat(document.getElementById('s-price').value)||60;
   cfg.batch = parseInt(document.getElementById('s-batch').value)||100;
   cfg.alert = parseInt(document.getElementById('s-alert').value)||10;
-  
-  cfg.musicUrl = document.getElementById('s-music-url').value.trim();
-  cfg.musicVolume = parseFloat(document.getElementById('s-music-volume').value);
-  
-  applyMusicSettings();
-  persist(); 
-  renderAll(); 
-  toast('Ustawienia zapisane');
+  persist(); renderAll(); toast('Ustawienia zapisane');
 }
 
 async function addFlavor() {
