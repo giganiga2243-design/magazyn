@@ -195,6 +195,11 @@ input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px r
     <div class="content">
 
       <div class="page active" id="page-pulpit">
+        <div class="card" id="welcome-card" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(16, 185, 129, 0.05)); border-color: rgba(99, 102, 241, 0.25); margin-bottom: 18px; padding: 20px;">
+          <h2 style="font-size: 18px; font-weight: 600; color: #fff; letter-spacing: -0.01em;" id="welcome-text">Inicjalizacja Matrixa...</h2>
+          <p style="font-size: 12.5px; color: var(--text2); margin-top: 4px;">Wszystkie systemy aktywne. Sprzedaż i rezerwacje zsynchronizowane w chmurze.</p>
+        </div>
+
         <div class="metrics">
           <div class="metric"><div class="metric-lbl">Magazyn (Dostępne)</div><div class="metric-val" id="m-stock">—</div></div>
           <div class="metric"><div class="metric-lbl">Zrealizowane</div><div class="metric-val" id="m-sold">—</div></div>
@@ -290,15 +295,15 @@ input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px r
           <div class="card-hd">Odtwarzacz Muzyki Tła</div>
           <div class="set-row" style="flex-direction: column; align-items: flex-start; gap: 8px;">
             <div>
-              <div class="set-lbl">Link bezpośredni do utworu (.mp3)</div>
-              <div class="set-desc">Wklej czysty link (np. z catbox.moe / filegarden). Odświeża muzykę u wszystkich automatycznie!</div>
+              <div class="set-lbl">Link bezpośredni do pliku (.mp3)</div>
+              <div class="set-desc">Wklej czysty adres URL (np. z catbox.moe). Muzyka zaktualizuje się u wszystkich na żywo!</div>
             </div>
             <input type="text" id="s-music-url" style="width: 100%; max-width: 500px;" placeholder="https://files.catbox.moe/xxxxxx.mp3" onchange="saveSettings()" />
           </div>
           <div class="set-row">
             <div>
               <div class="set-lbl">Głośność muzyki</div>
-              <div class="set-desc">Dostosuj poziom głośności tła</div>
+              <div class="set-desc">Ustaw optymalną głośność tła</div>
             </div>
             <div style="display: flex; align-items: center; gap: 10px;">
               <input type="range" id="s-music-volume" min="0" max="1" step="0.05" value="0.3" style="width: 120px; accent-color: var(--accent);" oninput="handleVolumeChange(this.value)" onchange="saveSettings()" />
@@ -346,7 +351,7 @@ const DEF_BUYERS = ['Anonimowy'];
 
 let state = { flavors: DEF_FLAVORS(), sales: [], buyers: [...DEF_BUYERS], orders: [] };
 let cfg = { ...DEF_SETTINGS };
-let selF = null, selB = null, qty = 1, txType = 'sale'; // 'sale' lub 'order'
+let selF = null, selB = null, qty = 1, txType = 'sale';
 let isSaving = false;
 
 // --- SILNIK SPADAJĄCYCH GWIAZD ---
@@ -364,8 +369,8 @@ class Star {
     this.x = Math.random() * canvas.width;
     this.y = -10;
     this.length = Math.random() * 80 + 20;
-    this.speed = Math.random() * 3 + 1;
-    this.alpha = Math.random() * 0.4 + 0.1;
+    this.speed = Math.random() * 2.5 + 1.5; // Zoptymalizowana prędkość
+    this.alpha = Math.random() * 0.4 + 0.15;
   }
   update() {
     this.y += this.speed;
@@ -384,7 +389,7 @@ class Star {
   }
 }
 
-for(let i=0; i<45; i++) { stars.push(new Star()); }
+for(let i=0; i<40; i++) { stars.push(new Star()); }
 function animateBackground() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   stars.forEach(s => { s.update(); s.draw(); });
@@ -392,12 +397,26 @@ function animateBackground() {
 }
 animateBackground();
 
+// --- LOSOWE POWITANIA SZYMKA I KUBY ---
+function triggerWelcomeMessage() {
+  const greetings = [
+    "Siemanko Szymon i Kuba, czas rozkręcić ten live! 🚀",
+    "Wiflux Matrix aktywowany. Powodzenia w sprzedaży panowie! 👑",
+    "Kuba, Szymon – stan magazynu zsynchronizowany, można działać! 🔥",
+    "Witamy w panelu dowodzenia Wiflux! Elita znowu w komplecie. ⚡",
+    "Systemy stabilne. Szymek, Kuba – czas zarobić trochę grosza! 💰"
+  ];
+  const randomGreeting = greetings[Math.floor(Math.random() * greetings.length)];
+  document.getElementById('welcome-text').textContent = randomGreeting;
+}
+
 // --- LOGOWANIE ---
 function checkLogin() {
   if(document.getElementById('login-password').value === 'szymek123') {
     localStorage.setItem('wiflux_logged', 'true');
     document.getElementById('login-screen').style.display = 'none';
-    startMusic(); // Próba odpalenia audio po interakcji logowania
+    triggerWelcomeMessage();
+    startMusic();
   } else {
     const err = document.getElementById('login-error');
     err.style.display = 'block';
@@ -408,6 +427,7 @@ function checkLogin() {
 async function init() {
   if(localStorage.getItem('wiflux_logged') === 'true') { 
     document.getElementById('login-screen').style.display = 'none'; 
+    triggerWelcomeMessage();
     startMusic();
   }
   toast('Wczytywanie bazy Matrix...');
@@ -417,7 +437,6 @@ async function init() {
   document.getElementById('s-batch').value = cfg.batch;
   document.getElementById('s-alert').value = cfg.alert;
   
-  // Wczytanie muzyki do inputów
   document.getElementById('s-music-url').value = cfg.musicUrl || '';
   document.getElementById('s-music-volume').value = cfg.musicVolume !== undefined ? cfg.musicVolume : 0.3;
   document.getElementById('volume-pct').textContent = Math.round((cfg.musicVolume !== undefined ? cfg.musicVolume : 0.3) * 100) + '%';
@@ -437,7 +456,6 @@ async function syncData() {
       state = { buyers: [...DEF_BUYERS], orders: [], ...d.state };
       if (d.settings) {
         cfg = { ...DEF_SETTINGS, ...d.settings };
-        // Aktualizacja w locie jeśli ktoś zmienił muzykę w tle
         applyMusicSettings();
       }
       renderAll();
@@ -468,7 +486,6 @@ function applyMusicSettings() {
   const audio = document.getElementById('bg-music');
   if (!audio) return;
 
-  // Sprawdź czy zmienił się link
   const currentUrl = document.getElementById('s-music-url').value.trim();
   if (audio.src !== currentUrl && currentUrl) {
     audio.src = currentUrl;
@@ -480,7 +497,6 @@ function applyMusicSettings() {
     audio.pause();
   }
 
-  // Zastosuj głośność
   const vol = cfg.musicVolume !== undefined ? cfg.musicVolume : 0.3;
   audio.volume = vol;
 }
@@ -492,7 +508,6 @@ function handleVolumeChange(val) {
 }
 
 function startMusic() {
-  // Próba odtworzenia przy wejściu (jeśli przeglądarka pozwoli)
   setTimeout(() => {
     const audio = document.getElementById('bg-music');
     if (audio && audio.src) {
@@ -501,7 +516,6 @@ function startMusic() {
   }, 1000);
 }
 
-// Globalny listener kliknięcia na wypadek gdyby przeglądarka na starcie wyciszyła audio
 document.addEventListener('click', () => {
   const audio = document.getElementById('bg-music');
   if (audio && audio.src && audio.paused && localStorage.getItem('wiflux_logged') === 'true') {
@@ -600,7 +614,6 @@ async function completeOrder(id) {
   const f = state.flavors.find(x => x.id === o.flavorId);
   if (!f || f.stock < o.qty) { toast('❌ Brak towaru w magazynie na realizację!'); return; }
   
-  // Odejmij z magazynu i dodaj do oficjalnej historii sprzedaży
   f.stock -= o.qty;
   state.sales.push({ flavorId: o.flavorId, flavorName: o.flavorName, buyer: o.buyer, qty: o.qty, ts: Date.now() });
   
@@ -682,13 +695,11 @@ async function handleSubmit() {
   if (!f) return;
 
   if (txType === 'sale') {
-    // Bezpośrednia sprzedaż
     if (f.stock < qty) { toast('❌ Za mało sztuk w magazynie!'); return; }
     f.stock -= qty;
     state.sales.push({ flavorId: selF, flavorName: f.name, buyer: selB, qty, ts: Date.now() });
     toast('Zapisywanie sprzedaży...');
   } else {
-    // Zamówienie (rezerwacja do zrealizowania)
     if(!state.orders) state.orders = [];
     state.orders.push({ id: 'o' + Date.now(), flavorId: selF, flavorName: f.name, buyer: selB, qty, ts: Date.now(), status: 'pending' });
     toast('Zapisywanie rezerwacji...');
@@ -747,7 +758,6 @@ function saveSettings() {
   cfg.batch = parseInt(document.getElementById('s-batch').value)||100;
   cfg.alert = parseInt(document.getElementById('s-alert').value)||10;
   
-  // Zapisywanie ustawień muzyki z pól HTML do zmiennej konfiguracji
   cfg.musicUrl = document.getElementById('s-music-url').value.trim();
   cfg.musicVolume = parseFloat(document.getElementById('s-music-volume').value);
   
